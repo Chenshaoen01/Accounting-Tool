@@ -1,0 +1,51 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="app" class="text-center">
+    <div class="container max-width-500">
+        @* 新增/編輯區域 *@
+        <div>
+            @* 信箱(帳號) *@
+            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+                信箱(帳號)
+                <input type="text" class="form-control">
+            </label>
+            @* 密碼 *@
+            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+                密碼
+                <input type="password" class="form-control">
+            </label>
+            @* 確認密碼 *@
+            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+                確認密碼
+                <input type="password" class="form-control">
+            </label>
+
+            @* 送出按鈕 *@
+            <div class="text-center">
+                <button type="button" class="btn btn-dark">送出</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    form: {
+                        email: null, password: null, passwordConfirm: null
+                    },
+                }
+            }
+            , created() {
+            }
+            , methods: {
+                
+            }
+        });
+        const vm = app.mount('#app');
+    </script>
+}
+

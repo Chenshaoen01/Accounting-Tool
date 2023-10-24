@@ -5,6 +5,22 @@
     {
       "library": "bootstrap-icons@1.11.1",
       "destination": "wwwroot/bootstrap-icons/"
+    },
+    {
+      "library": "bootstrap@5.3.2",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "vue@3.3.6",
+      "destination": "wwwroot/vue/"
+    },
+    {
+      "library": "Chart.js@2.7.2",
+      "destination": "wwwroot/Chart.js/"
+    },
+    {
+      "library": "Chart.js@4.4.0",
+      "destination": "wwwroot/Chart.js/"
     }
   ]
 }

@@ -16,6 +16,18 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\User\Desktop\AccountingTool\AccountingTool
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/User/Desktop/AccountingTool/AccountingTool/Areas/AccountingData/Views/AccountPage/CreateAccount.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWNjb3VudGluZ0RhdGFcVmlld3NcQWNjb3VudFBhZ2VcQ3JlYXRlQWNjb3VudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/AccountingTool/AccountingTool/Areas/AccountingData/Views/AccountPage/LogIn.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWNjb3VudGluZ0RhdGFcVmlld3NcQWNjb3VudFBhZ2VcTG9nSW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/User/Desktop/AccountingTool/AccountingTool/Areas/AccountingData/Views/CreateAndUpdate/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWNjb3VudGluZ0RhdGFcVmlld3NcQ3JlYXRlQW5kVXBkYXRlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/User/Desktop/AccountingTool/AccountingTool/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
