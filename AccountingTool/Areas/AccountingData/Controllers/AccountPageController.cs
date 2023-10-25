@@ -15,5 +15,10 @@ namespace AccountingTool.Areas.AccountingData.Controllers
         {
             return View();
         }
+
+        public ActionResult UnauthorizedPage()
+        {
+            return View();
+        }
     }
 }

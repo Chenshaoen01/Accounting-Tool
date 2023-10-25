@@ -4,27 +4,26 @@
 
 <div id="app" class="text-center">
     <div class="container max-width-500">
-        @* 新增/編輯區域 *@
         <div>
             @* 信箱(帳號) *@
-            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+            <label class="form-label w-100 d-flex flex-column align-items-start">
                 信箱(帳號)
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" v-model="form.email">
             </label>
             @* 密碼 *@
-            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+            <label class="form-label w-100 d-flex flex-column align-items-start">
                 密碼
-                <input type="password" class="form-control">
+                <input type="password" class="form-control" v-model="form.password">
             </label>
             @* 確認密碼 *@
-            <label class="form-label w-100 d-flex flex-column align-items-start" v-model="form.email">
+            <label class="form-label w-100 d-flex flex-column align-items-start">
                 確認密碼
-                <input type="password" class="form-control">
+                <input type="password" class="form-control" v-model="form.passwordConfirm">
             </label>
 
             @* 送出按鈕 *@
             <div class="text-center">
-                <button type="button" class="btn btn-dark">送出</button>
+                <button type="button" class="btn btn-dark" v-on:click="createAccountSubmit">送出</button>
             </div>
         </div>
     </div>
@@ -42,7 +41,20 @@
             , created() {
             }
             , methods: {
-                
+                createAccountSubmit() {
+                    const url = window.location.origin + "/api/Users/CreateAccount"
+                    const UserData = {
+                        email: this.form.email,
+                        password: this.form.password
+                    }
+                    axios.post(url, UserData)
+                        .then(() => {
+                            alert("帳號建立成功")
+                        })
+                        .catch(() => {
+                            alert("帳號建立失敗")
+                        })
+                }
             }
         });
         const vm = app.mount('#app');

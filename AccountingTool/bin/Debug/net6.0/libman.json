@@ -15,12 +15,13 @@
       "destination": "wwwroot/vue/"
     },
     {
-      "library": "Chart.js@2.7.2",
+      "library": "Chart.js@4.4.0",
       "destination": "wwwroot/Chart.js/"
     },
     {
-      "library": "Chart.js@4.4.0",
-      "destination": "wwwroot/Chart.js/"
+      "provider": "cdnjs",
+      "library": "axios@1.5.1",
+      "destination": "wwwroot/axios/"
     }
   ]
 }

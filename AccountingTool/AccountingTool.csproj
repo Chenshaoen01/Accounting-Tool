@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.12">
       <PrivateAssets>all</PrivateAssets>
@@ -18,8 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\AccountingData\Data\" />
-    <Folder Include="Areas\AccountingData\Models\" />
-    <Folder Include="Areas\API\Controllers\" />
     <Folder Include="Areas\API\Data\" />
     <Folder Include="Areas\API\Models\" />
     <Folder Include="Areas\API\Views\" />
