@@ -21,7 +21,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/AccountingData/AccountPage/UnauthorizedPage">登出</a>
+                            <button class="btn" id="logOutButton">登出</button>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" href="/AccountingData/AccountPage/CreateAccount">註冊</a>
@@ -69,13 +69,24 @@
             method: "POST",
             url: url,
             headers: {
-               Authorization: `Bearer ${token}` // Bearer 跟 token 中間有一個空格
+               Authorization: `Bearer ${token}`
             }
         }).catch((error) => {
             if (error.response.status === 401) {
                 window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage"
             }
         })
+
+        const logOutButton = document.getElementById('logOutButton')
+        logOutButton.addEventListener("click", function () {
+            const date = new Date();
+            date.setTime(date.getTime() - 1000000);
+            console.log(date)
+            document.cookie = "accountingToolToken='';expires=" + date.toGMTString();
+
+            window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage"
+        })
+        
     </script>
 </body>
 </html>
