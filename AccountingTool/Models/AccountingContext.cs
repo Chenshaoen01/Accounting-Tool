@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
 
 namespace AccountingTool.Models;
 
 public partial class AccountingContext : DbContext
 {
-    private readonly IConfiguration? _configuration;
-    public AccountingContext(IConfiguration configuration)
+    public AccountingContext()
     {
-        _configuration = configuration;
     }
 
     public AccountingContext(DbContextOptions<AccountingContext> options)
@@ -25,7 +22,8 @@ public partial class AccountingContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(_configuration.GetValue<string>("ConnectionStrings: Default"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=127.0.0.1;Database=Accounting;User ID=sa;Password=Tp6gl4p19980515;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,9 +36,7 @@ public partial class AccountingContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.Description).HasMaxLength(50);
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Time)
-                .IsRowVersion()
-                .IsConcurrencyToken();
+            entity.Property(e => e.Time).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Label>(entity =>

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "EousUh0BnPrziSuIoGCVEC0zpqhOWqWsaiyX4IVcS0E=",
+  "Hash": "6P0NvqZSF/tp3US72qsk8hIUa68qYaIWLCHQitwGCIw=",
   "Source": "AccountingTool",
   "BasePath": "_content/AccountingTool",
   "Mode": "Default",
@@ -35443,6 +35443,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\wwwroot\\js\\calculatorMixin.js",
+      "SourceId": "AccountingTool",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\wwwroot\\",
+      "BasePath": "_content/AccountingTool",
+      "RelativePath": "js/calculatorMixin.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\calculatorMixin.js"
     },
     {
       "Identity": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\wwwroot\\js\\site.js",

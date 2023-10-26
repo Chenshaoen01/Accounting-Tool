@@ -8333,6 +8333,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\wwwroot\\js\\calculatorMixin.js",
+      "PackagePath": "staticwebassets\\js\\calculatorMixin.js"
+    },
+    {
       "Id": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

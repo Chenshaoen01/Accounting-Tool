@@ -4,6 +4,7 @@
 
 <div id="app" class="text-center">
     <div class="container max-width-500">
+        <h2>註冊帳號</h2>
         <div>
             @* 信箱(帳號) *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
@@ -42,19 +43,23 @@
             }
             , methods: {
                 createAccountSubmit() {
-                    const url = window.location.origin + "/api/Users/CreateAccount"
-                    const UserData = {
-                        email: this.form.email,
-                        password: this.form.password
+                    if (this.form.password === this.form.passwordConfirm) {
+                        const url = window.location.origin + "/api/Users/CreateAccount"
+                        const UserData = {
+                            email: this.form.email,
+                            password: this.form.password
+                        }
+                        axios.post(url, UserData)
+                            .then(() => {
+                                window.location = window.location.origin + "/AccountingData/AccountPage/Login"
+                                alert("帳號建立成功")
+                            })
+                            .catch(() => {
+                                alert("帳號建立失敗")
+                            })
+                    } else {
+                        alert("密碼 與 確認密碼 不相符")
                     }
-                    axios.post(url, UserData)
-                        .then(() => {
-                            window.location = window.location.origin + "/AccountingData/AccountPage/Login"
-                            alert("帳號建立成功")
-                        })
-                        .catch(() => {
-                            alert("帳號建立失敗")
-                        })
                 }
             }
         });
