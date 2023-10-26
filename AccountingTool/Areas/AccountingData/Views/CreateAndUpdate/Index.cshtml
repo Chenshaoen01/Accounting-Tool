@@ -96,13 +96,24 @@
             }
             , methods: {
                 submit() {
-                    if (this.mode === "Create") {
-                        const url = window.location.origin + "/"
-                        axios.post(url, this.form)
-                    } else if (this.mode === "Edit") {
-                        const url = window.location.origin + "/"
-                        axios.put(url, this.form)
+                    const action = "POST"
+                    if (this.mode === "Edit") {
+                        action = "PUT"
                     }
+
+                    axios.post({
+                        url: url,
+                        method: window.location.origin + "/AccountingTool",
+                        data: this.form
+                    }).then((res) => {
+                        if (this.mode === "Create") {
+                            alert("成功建立資料")
+                        }else{
+                            alert("成功更新資料")
+                        }
+                    }).catch((err) => {
+                        console.log(err)
+                    })
                 }
             }
         });

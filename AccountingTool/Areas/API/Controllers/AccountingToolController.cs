@@ -111,11 +111,11 @@ namespace AccountingTool.Areas.API.Controllers
             string SqlString =
                 "UPDATE AccountingDatas " +
                  "SET "+
-                 "[Description] = @Description " +
-                 "[Category] = @Category " +
-                 "[UserId] = @UserId " +
-                 "[Label] = @Label " +
-                 "[Time] = @Time " +
+                 "[Description] = @Description ," +
+                 "[Category] = @Category ," +
+                 "[UserId] = @UserId ," +
+                 "[Label] = @Label ," +
+                 "[Time] = @Time ," +
                  "[Price] = @Price "+
                  "WHERE Id = @Id";
 

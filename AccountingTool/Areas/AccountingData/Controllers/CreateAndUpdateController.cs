@@ -6,11 +6,15 @@ namespace AccountingTool.Areas.AccountingData.Controllers
     [Area("AccountingData")]
     public class CreateAndUpdateController : Controller
     {
-        // GET: HomeController
-        public ActionResult Index()
+        public ActionResult Create()
         {
-            return View();
+            return View("Index");
         }
 
+        public ActionResult Edit(int Id)
+        {
+            ViewBag.Id = Id;
+            return View("Index");
+        }
     }
 }

@@ -14,42 +14,31 @@
         <canvas id="myChart" class="mb-3"></canvas>
         @* 資料細項 *@
         <div class="mb-3">
-            <div class="accordion mb-3" id="accordionExample">
+            <div class="accordion mb-3" :id="collapseOne" v-for="(item, index) in dataList">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                         <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseOne" aria-controls="collapseOne">
-                            Accordion Item #1
+                                data-bs-target="#collapseOne" :aria-controls="collapseOne">
+                            {{item.label}}
                         </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong>
-                            It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion" id="accordionExample2">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                            Accordion Item #1
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample2">
-                        <div class="accordion-body">
-                            <strong>This is the first item's accordion body.</strong>
-                            It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                    <div :id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                        <div class="accordion-body text-start">
+                            <div class="border-bottom py-2">類別：{{item.label}}</div>
+                            <div class="border-bottom py-2">時間：{{item.time}}</div>
+                            <div class="border-bottom py-2">價格：{{item.price}}</div>
+                            <div class="py-2">描述：{{item.description}}</div>
+                            <div class="py-2 text-center">
+                                <button type="button" class="btn btn-dark me-2" v-on:click="editPage(item.id)">編輯</button>
+                                <button type="button" class="btn btn-dark">刪除</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         @* 新增按鈕 *@
-        <button type="button" class="btn shadow-none" v-on:click="addAccountingDataPage">
+        <button type="button" class="btn shadow-none" v-on:click="createPage">
             <i class="bi bi-plus-circle-fill fs-2"></i>
         </button>
     </div>
@@ -84,6 +73,9 @@
         const app = Vue.createApp({
             data() {
                 return {
+                    token: null,
+                    category: "expense",
+                    dataList: [],
                     chart: null,
                     chartContent: {
                         type: 'bar',
@@ -106,10 +98,34 @@
                     }
                 }
             }
+            , created() {
+                this.getToken();
+                this.getDataList();
+            }
             , mounted() {
                 this.chart = this.newChart();
             }
             , methods: {
+                getToken() {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split("; accountingToolToken=");
+                    if (parts.length === 2) { 
+                        this.token = parts.pop().split(';').shift();
+                    }
+                },
+                getDataList() {
+                    const url = "api/AccountingTool/getDataList/" + this.category
+                    axios({
+                        method: "GET",
+                        url: url,
+                        headers: {
+                            Authorization: `Bearer ${this.token}`
+                        }
+                    })
+                    .then((res) => {
+                        this.dataList = res.data
+                    })
+                },
                 newChart() {
                     const ctx = document.getElementById('myChart');
                     return new Chart(ctx, this.chartContent);
@@ -118,8 +134,14 @@
                     this.chart.destroy();
                     this.chart = newChart();
                 },
-                addAccountingDataPage() {
-                    window.location = window.location.origin + "/AccountingData/CreateAndUpdate"
+                createPage() {
+                    window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Create";
+                },
+                editPage(dataId) {
+                    window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Edit?Id=" + dataId;
+                },
+                deleteData() {
+                    const url = "api/AccountingTool/getDataList/" + this.category
                 }
             }
         });
