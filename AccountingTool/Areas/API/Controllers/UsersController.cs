@@ -17,7 +17,7 @@ using System.Net.Http.Headers;
 using System.IO;
 using Newtonsoft.Json;
 using NuGet.Common;
-using JWTDecoder;
+using Newtonsoft.Json.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -37,6 +37,7 @@ namespace AccountingTool.Areas.API.Controllers
             _saltString = configuration.GetValue<string>("SaltString");
         }
 
+        //密碼雜湊、加鹽
         public string getHashedPassword(User userData)
         {
             byte[] salt = Encoding.UTF8.GetBytes(_saltString); // divide by 8 to convert bits to bytes
@@ -102,7 +103,7 @@ namespace AccountingTool.Areas.API.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Email, user.First().Email),
-                    new Claim("UserId", user.First().Email)
+                    new Claim("UserId", user.First().Id.ToString()),
                 };
 
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:KEY"]));
@@ -121,17 +122,13 @@ namespace AccountingTool.Areas.API.Controllers
             }
         }
 
+        //確認token是否有效
         [Authorize]
-        // POST api/<UsersController>
         [HttpPost("CheckTokenValid")]
-        public ActionResult CheckTokenValid()
+        public void CheckTokenValid()
         {
-            string authorization = Request.Headers["Authorization"];
-            string jwtToken = authorization.Replace("Bearer ", "");
-
-
+            return Ok("123");
             return Ok("123");
         }
-
     }
 }
