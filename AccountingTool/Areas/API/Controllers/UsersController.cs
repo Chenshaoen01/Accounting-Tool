@@ -129,7 +129,6 @@ namespace AccountingTool.Areas.API.Controllers
             string authorization = Request.Headers["Authorization"];
             string jwtToken = authorization.Replace("Bearer ", "");
 
-            var decodedToken =  ;
 
             return Ok("123");
         }

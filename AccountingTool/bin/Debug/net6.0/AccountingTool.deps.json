@@ -9,6 +9,7 @@
       "AccountingTool/1.0.0": {
         "dependencies": {
           "Dapper": "2.1.15",
+          "JWTDecoder": "0.9.2",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.24",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.12",
           "Microsoft.EntityFrameworkCore.Tools": "7.0.12",
@@ -597,6 +598,21 @@
         "resources": {
           "lib/net6.0/zh-Hant/Humanizer.resources.dll": {
             "locale": "zh-Hant"
+          }
+        }
+      },
+      "JWTDecoder/0.9.2": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/JWTDecoder.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          },
+          "lib/netstandard2.0/System.ComponentModel.Composition.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26419.2"
           }
         }
       },
@@ -3036,6 +3052,13 @@
       "sha512": "sha512-VIXB7HCUC34OoaGnO3HJVtSv2/wljPhjV7eKH4+TFPgQdJj2lvHNKY41Dtg0Bphu7X5UaXFR4zrYYyo+GNOjbA==",
       "path": "humanizer.core.zh-hant/2.14.1",
       "hashPath": "humanizer.core.zh-hant.2.14.1.nupkg.sha512"
+    },
+    "JWTDecoder/0.9.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WXUr635+MTcMHRMgkuaSIHj1OiDAP25R32++RuRXzVK7VeWyQlPWnwdmNyjVNd06vGRsHFBy9/NBhuDy9g61Kw==",
+      "path": "jwtdecoder/0.9.2",
+      "hashPath": "jwtdecoder.0.9.2.nupkg.sha512"
     },
     "MessagePack/2.1.152": {
       "type": "package",

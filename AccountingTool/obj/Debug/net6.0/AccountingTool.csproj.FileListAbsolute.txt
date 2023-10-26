@@ -540,3 +540,5 @@ D:\Users\Intostar\Desktop\accountingTool\AccountingTool\bin\Debug\net6.0\Microso
 D:\Users\Intostar\Desktop\accountingTool\AccountingTool\obj\Debug\net6.0\scopedcss\Views\Shared\_LayoutAccoutPage.cshtml.rz.scp.css
 C:\Users\User\Desktop\AccountingTool\AccountingTool\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\User\Desktop\AccountingTool\AccountingTool\obj\Debug\net6.0\scopedcss\Views\Shared\_LayoutAccoutPage.cshtml.rz.scp.css
+C:\Users\User\Desktop\AccountingTool\AccountingTool\bin\Debug\net6.0\JWTDecoder.dll
+C:\Users\User\Desktop\AccountingTool\AccountingTool\bin\Debug\net6.0\System.ComponentModel.Composition.dll
