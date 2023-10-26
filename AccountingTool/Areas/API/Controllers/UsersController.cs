@@ -127,8 +127,6 @@ namespace AccountingTool.Areas.API.Controllers
         [HttpPost("CheckTokenValid")]
         public void CheckTokenValid()
         {
-            return Ok("123");
-            return Ok("123");
         }
     }
 }
