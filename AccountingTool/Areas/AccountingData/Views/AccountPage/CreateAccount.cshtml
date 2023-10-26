@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutAccoutPage.cshtml";
 }
 
 <div id="app" class="text-center">
@@ -49,6 +49,7 @@
                     }
                     axios.post(url, UserData)
                         .then(() => {
+                            window.location = window.location.origin + "/AccountingData/AccountPage/Login"
                             alert("帳號建立成功")
                         })
                         .catch(() => {

@@ -13,6 +13,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Headers;
+using System.IO;
+using Newtonsoft.Json;
+using NuGet.Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -70,7 +74,7 @@ namespace AccountingTool.Areas.API.Controllers
             }
         }
 
-        // GET api/<UsersController>/5
+        // 登入
         [HttpPost("LogIn")]
         public ActionResult Get(User userData)
         {
@@ -96,7 +100,8 @@ namespace AccountingTool.Areas.API.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Email, user.First().Email)
+                    new Claim(JwtRegisteredClaimNames.Email, user.First().Email),
+                    new Claim("UserId", user.First().Email)
                 };
 
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:KEY"]));
@@ -120,7 +125,12 @@ namespace AccountingTool.Areas.API.Controllers
         [HttpPost("CheckTokenValid")]
         public ActionResult CheckTokenValid()
         {
-            return Ok("valid token");
+            string authorization = Request.Headers["Authorization"];
+            string jwtToken = authorization.Replace("Bearer ", "");
+
+            //var decodedToken =  ;
+
+            return Ok("123");
         }
 
     }
