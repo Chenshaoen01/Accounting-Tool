@@ -5,33 +5,35 @@
 <div id="app" class="text-center">
     <div class="btn-group btn-group-lg mb-5" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-dark shadow-none">支出</button>
-        <button type="button" class="btn shadow-none btn-dark">收入</button>
-        <button type="button" class="btn shadow-none btn-dark">盈餘</button>
+        <button type="button" class="btn btn-dark shadow-none">收入</button>
+        <button type="button" class="btn btn-dark shadow-none">盈餘</button>
     </div>
     
     <div class="container max-width-500">
         @* 圖表區域 *@
         <canvas id="myChart" class="mb-3"></canvas>
+
         @* 資料細項 *@
-        <div class="mb-3">
-            <div class="accordion mb-3" :id="collapseOne" v-for="(item, index) in dataList">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseOne" :aria-controls="collapseOne">
-                            {{item.label}}
-                        </button>
-                    </h2>
-                    <div :id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                        <div class="accordion-body text-start">
-                            <div class="border-bottom py-2">類別：{{item.label}}</div>
-                            <div class="border-bottom py-2">時間：{{item.time}}</div>
-                            <div class="border-bottom py-2">價格：{{item.price}}</div>
-                            <div class="py-2">描述：{{item.description}}</div>
-                            <div class="py-2 text-center">
-                                <button type="button" class="btn btn-dark me-2" v-on:click="editPage(item.id)">編輯</button>
-                                <button type="button" class="btn btn-dark">刪除</button>
-                            </div>
+        <div class="accordion mb-3">
+            <div class="accordion-item" v-for="(item, index) in dataList" :key="item.id">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button bg-dark text-white" type="button"
+                    data-bs-toggle="collapse" :data-bs-target="'#'+'data-'+item.id"
+                    aria-expanded="true" :aria-controls="'data-'+item.id">
+                        <i :class="item.labelContent.icon"></i>
+                        <span class="ms-2">{{item.labelContent.name}}</span>
+                        <span class="ms-2">{{item.price}}元</span>
+                    </button>
+                </h2>
+                <div :id="'data-'+item.id" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body text-start">
+                        <div class="border-bottom py-2">類別：{{item.labelContent.name}}</div>
+                        <div class="border-bottom py-2">時間：{{item.time}}</div>
+                        <div class="border-bottom py-2">金額：{{item.price}}</div>
+                        <div class="py-2">描述：{{item.description}}</div>
+                        <div class="py-2 text-center">
+                            <button type="button" class="btn btn-dark me-2" v-on:click="editPage(item.id)">編輯</button>
+                            <button type="button" class="btn btn-dark" v-on:click="deleteData(item.id)">刪除</button>
                         </div>
                     </div>
                 </div>
@@ -42,9 +44,6 @@
             <i class="bi bi-plus-circle-fill fs-2"></i>
         </button>
     </div>
-    
-
-    
 </div>
 @section scripts{
     <script type="module">
@@ -71,9 +70,9 @@
     </script>
     <script>
         const app = Vue.createApp({
+            mixins: [VueMxin],
             data() {
                 return {
-                    token: null,
                     category: "expense",
                     dataList: [],
                     chart: null,
@@ -99,31 +98,27 @@
                 }
             }
             , created() {
-                this.getToken();
                 this.getDataList();
             }
             , mounted() {
                 this.chart = this.newChart();
             }
             , methods: {
-                getToken() {
-                    const value = `; ${document.cookie}`;
-                    const parts = value.split("; accountingToolToken=");
-                    if (parts.length === 2) { 
-                        this.token = parts.pop().split(';').shift();
-                    }
-                },
                 getDataList() {
                     const url = "api/AccountingTool/getDataList/" + this.category
                     axios({
                         method: "GET",
                         url: url,
                         headers: {
-                            Authorization: `Bearer ${this.token}`
+                            Authorization: `Bearer ${this.getToken()}`
                         }
                     })
                     .then((res) => {
-                        this.dataList = res.data
+                        this.dataList = res.data;
+                        // 編輯日期格式
+                        this.dataList.forEach(item => {
+                            item.time = this.dateTrnsfer(item.time)
+                        });
                     })
                 },
                 newChart() {
@@ -140,8 +135,19 @@
                 editPage(dataId) {
                     window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Edit?Id=" + dataId;
                 },
-                deleteData() {
-                    const url = "api/AccountingTool/getDataList/" + this.category
+                deleteData(dataId) {
+                    const url = "api/AccountingTool/deleteData/" + dataId
+                    axios({
+                        method: "DELETE",
+                        url: url,
+                        headers: {
+                            Authorization: `Bearer ${this.getToken()}`
+                        }
+                    })
+                    .then((res) => {
+                        alert(res.data)
+                        this.getDataList();
+                    })
                 }
             }
         });

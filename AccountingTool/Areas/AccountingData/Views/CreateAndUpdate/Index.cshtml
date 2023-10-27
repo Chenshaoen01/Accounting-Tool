@@ -20,11 +20,11 @@
             @* 日期 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 日期
-                <input type="date" class="form-control" v-model="form.date" />
+                <input type="date" class="form-control" v-model="form.time" />
             </label>
             @* 備註 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                備註
+                描述
                 <input type="text" class="form-control" v-model="form.description">
             </label>
             @* 金額 *@
@@ -65,7 +65,6 @@
                     </div>
                 </div>
             </div>
-
             @* 送出按鈕 *@
             <div class="text-center">
                 <button type="button" class="btn btn-dark" v-on:click="submit">送出</button>
@@ -77,42 +76,74 @@
 @section scripts{
     <script>
         const app = Vue.createApp({
-            mixins: [calculatorMixin],
+            mixins: [VueMxin, calculatorMixin],
             data() {
                 return {
                     mode: null,
                     form: {
-                        Id: null, category: null, label: null, date: null, description: null, price: null
+                        Id: null, category: "expense", label: null, time: null, description: null, price: null
                     },
                 }
             }
             , created() {
+                // 取得token
+                this.getToken();
+
+                // 設定模式
                 this.mode = "Create"
                 if ("@ViewBag.Id") {
-                    this.mode = "Edit"
+                    this.mode = "Edit";
                 }
 
-                this.form.category
+                if ("@ViewBag.Id") {
+                    // 設定資料Id
+                    this.form.Id = "@ViewBag.Id";
+                    // 依Id取得資料
+                    this.getDataById();
+                }
             }
             , methods: {
+                getToken() {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split("; accountingToolToken=");
+                    if (parts.length === 2) {
+                        this.token = parts.pop().split(';').shift();
+                    }
+                },
+                getDataById() {
+                    const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id;
+                    axios({
+                        url: url,
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${this.getToken()}`
+                        }
+                    }).then((res) => {
+                        this.form = res.data[0]
+                        // 編輯日期格式
+                        this.form.time = this.dateTrnsfer(res.data[0].time)
+                    })
+                },
                 submit() {
-                    const action = "POST"
+                    let action = "POST";
                     if (this.mode === "Edit") {
-                        action = "PUT"
+                        action = "PUT";
                     }
 
-                    axios.post({
+                    const url = window.location.origin + "/api/AccountingTool"
+                    axios({
                         url: url,
-                        method: window.location.origin + "/AccountingTool",
-                        data: this.form
+                        method: action,
+                        data: this.form,
+                        headers: {
+                            Authorization: `Bearer ${this.getToken()}`
+                        }
                     }).then((res) => {
                         if (this.mode === "Create") {
-                            alert("成功建立資料")
+                            alert("成功建立資料");
                         }else{
-                            alert("成功更新資料")
+                            alert("成功更新資料");
                         }
-                    }).catch((err) => {
-                        console.log(err)
                     })
                 }
             }

@@ -1,26 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Desktop\\AccountingTool\\AccountingTool\\AccountingTool.csproj": {}
+    "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\AccountingTool.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Desktop\\AccountingTool\\AccountingTool\\AccountingTool.csproj": {
+    "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\AccountingTool.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Desktop\\AccountingTool\\AccountingTool\\AccountingTool.csproj",
+        "projectUniqueName": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\AccountingTool.csproj",
         "projectName": "AccountingTool",
-        "projectPath": "C:\\Users\\User\\Desktop\\AccountingTool\\AccountingTool\\AccountingTool.csproj",
-        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Desktop\\AccountingTool\\AccountingTool\\obj\\",
+        "projectPath": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\AccountingTool.csproj",
+        "packagesPath": "D:\\Users\\Intostar\\.nuget\\packages\\",
+        "outputPath": "D:\\Users\\Intostar\\Desktop\\accountingTool\\AccountingTool\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "D:\\Users\\Intostar\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -85,7 +86,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }
