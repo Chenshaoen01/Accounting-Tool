@@ -12,7 +12,7 @@
                 return parts.pop().split(';').shift();
             }
         },
-        dateTrnsfer(dateRwData) {
+        dateTransfer(dateRwData) {
             const formDate = new Date(dateRwData);
             const year = formDate.getFullYear();
             const month = String(formDate.getMonth() + 1).padStart(2, "0");

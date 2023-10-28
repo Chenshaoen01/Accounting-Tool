@@ -6,8 +6,9 @@ namespace AccountingTool.Areas.AccountingData.Controllers
     [Area("AccountingData")]
     public class CreateAndUpdateController : Controller
     {
-        public ActionResult Create()
+        public ActionResult Create(string category)
         {
+            ViewBag.Category = category;
             return View("Index");
         }
 

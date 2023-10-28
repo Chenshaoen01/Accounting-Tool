@@ -5,6 +5,7 @@ using AccountingTool.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Azure.Core;
 using NuGet.Versioning;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -36,20 +37,35 @@ namespace AccountingTool.Areas.API.Controllers
             return UserId;
         }
 
+        //取得類別列表
+        public IEnumerable<Label> getLabelList()
+        {
+            string labelSqlString = "SELECT * FROM Labels";
+            using (var conn = new SqlConnection(_connectionString))
+            {
+               return conn.Query<Label>(labelSqlString);
+            }
+        }
+
         //取得資料列表
-        [HttpGet("getDataList/{category}")]
-        public ActionResult Get(string category)
+        [HttpGet("getDataList")]
+        public ActionResult Get(string category, string startDate, string endDate)
         {
             string userId = readTokenUserId(Request);
 
             var parameters = new DynamicParameters();
             parameters.Add("userId", userId);
             parameters.Add("category", category);
+            parameters.Add("startDate", startDate.ToString());
+            parameters.Add("endDate", endDate.ToString());
 
             //取得符合UserId、日期、類型的資料列表
             string dataListSqlString =
             "SELECT * FROM AccountingDatas " +
-            "WHERE AccountingDatas.UserId = @userId AND AccountingDatas.Category = @category ";
+            "WHERE AccountingDatas.UserId = @userId " +
+            "AND AccountingDatas.Category = @category " +
+            "AND AccountingDatas.Time > @startDate " +
+            "AND AccountingDatas.Time < @endDate ";
 
             IEnumerable<AccountingDataGet> DataListResult = new List<AccountingDataGet>();
             using (var conn = new SqlConnection(_connectionString))
@@ -58,13 +74,7 @@ namespace AccountingTool.Areas.API.Controllers
             }
 
             //取得label資料列表
-            string labelSqlString ="SELECT * FROM Labels";
-
-            IEnumerable<Label> LabelResult = new List<Label>();
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                LabelResult = conn.Query<Label>(labelSqlString);
-            }
+            IEnumerable<Label> LabelResult = getLabelList();
 
             //將符合dataList label 的label 資料寫入
             foreach (var data in DataListResult)
@@ -166,6 +176,20 @@ namespace AccountingTool.Areas.API.Controllers
             catch
             {
                 return BadRequest("無法刪除資料");
+            }
+        }
+
+        [HttpGet("getLabelList")]
+        public ActionResult getLabelListApi()
+        {
+            try
+            {
+                IEnumerable<Label> LabelList = getLabelList();
+                return Ok(LabelList);
+            }
+            catch
+            {
+                return BadRequest("無法取得列表資料");
             }
         }
     }

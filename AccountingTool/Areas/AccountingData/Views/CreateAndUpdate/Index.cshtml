@@ -7,14 +7,22 @@
     <div class="container max-width-500">
         @* 新增/編輯區域 *@
         <div>
+            @* 支出/收入 *@
+            <label class="form-label w-100 d-flex flex-column align-items-start">
+                支出/收入
+                <select class="form-select" v-model="form.category" :disabled="mode === 'Edit'">
+                    <option value="expense">支出</option>
+                    <option value="income">收入</option>
+                </select>
+            </label>
             @* 種類 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 種類
                 <select class="form-select" v-model="form.label">
-                    <option selected>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option value="item.id" v-for="item in categoryList" :key="item.id">
+                        <i :class="item.labelContent.icon"></i>
+                        {{item.name}}
+                    </option>
                 </select>
             </label>
             @* 日期 *@
@@ -79,6 +87,7 @@
             mixins: [VueMxin, calculatorMixin],
             data() {
                 return {
+                    categoryList: null,
                     mode: null,
                     form: {
                         Id: null, category: "expense", label: null, time: null, description: null, price: null
@@ -88,11 +97,15 @@
             , created() {
                 // 取得token
                 this.getToken();
-
+                // 取得類別種類
+                this.getCategoryList();
                 // 設定模式
                 this.mode = "Create"
                 if ("@ViewBag.Id") {
                     this.mode = "Edit";
+                }
+                if ("@ViewBag.Category") {
+                    this.form.category = "@ViewBag.Category";
                 }
 
                 if ("@ViewBag.Id") {
@@ -103,13 +116,6 @@
                 }
             }
             , methods: {
-                getToken() {
-                    const value = `; ${document.cookie}`;
-                    const parts = value.split("; accountingToolToken=");
-                    if (parts.length === 2) {
-                        this.token = parts.pop().split(';').shift();
-                    }
-                },
                 getDataById() {
                     const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id;
                     axios({
@@ -121,7 +127,19 @@
                     }).then((res) => {
                         this.form = res.data[0]
                         // 編輯日期格式
-                        this.form.time = this.dateTrnsfer(res.data[0].time)
+                        this.form.time = this.dateTransfer(res.data[0].time)
+                    })
+                },
+                getCategoryList() {
+                    const url = window.location.origin + "/api/AccountingTool/getLabelList";
+                    axios({
+                        url: url,
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${this.getToken()}`
+                        }
+                    }).then((res) => {
+                        this.categoryList = res.data
                     })
                 },
                 submit() {
