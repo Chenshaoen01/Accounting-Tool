@@ -63,9 +63,12 @@ namespace AccountingTool.Areas.API.Controllers
             string dataListSqlString =
             "SELECT * FROM AccountingDatas " +
             "WHERE AccountingDatas.UserId = @userId " +
-            "AND AccountingDatas.Category = @category " +
             "AND AccountingDatas.Time > @startDate " +
             "AND AccountingDatas.Time < @endDate ";
+
+            if(category == "expense" || category == "income") {
+                dataListSqlString = dataListSqlString + "AND AccountingDatas.Category = @category ";
+            }
 
             IEnumerable<AccountingDataGet> DataListResult = new List<AccountingDataGet>();
             using (var conn = new SqlConnection(_connectionString))

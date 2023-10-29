@@ -19,7 +19,7 @@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 種類
                 <select class="form-select" v-model="form.label">
-                    <option value="item.id" v-for="item in categoryList" :key="item.id">
+                    <option :value="item.id" v-for="item in categoryList" :key="item.id">
                         <i :class="item.labelContent.icon"></i>
                         {{item.name}}
                     </option>
@@ -32,7 +32,7 @@
             </label>
             @* 備註 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                描述
+                備註
                 <input type="text" class="form-control" v-model="form.description">
             </label>
             @* 金額 *@

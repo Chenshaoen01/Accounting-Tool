@@ -19,6 +19,13 @@
             const date = String(formDate.getDate() + 1).padStart(2, "0")
             const dateTransfered = `${year}-${month}-${date}`;
             return dateTransfered;
+        },
+        dateTransferToMonth(dateRwData) {
+            const formDate = new Date(dateRwData);
+            const year = formDate.getFullYear();
+            const month = String(formDate.getMonth() + 1).padStart(2, "0");
+            const dateTransfered = `${year}-${month}`;
+            return dateTransfered;
         }
     }
 };
