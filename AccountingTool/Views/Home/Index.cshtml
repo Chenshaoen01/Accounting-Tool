@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "資料列表";
+    ViewData["Title"] = "";
 }
 
 <div id="app" class="text-center">
@@ -98,9 +98,11 @@
                 const oneMonthAgDate = new Date();
                 oneMonthAgDate.setMonth(currentDate.getMonth() - 3);
                 this.searchDate.startDate = this.dateTransfer(oneMonthAgDate);
-                
             }
             , mounted() {
+                // 顯示資料載入畫面
+                this.loadingStart();
+                // 預設模式為"支出"，並搜尋資料
                 this.changeCategory("expense")
             }
             , methods: {
@@ -121,6 +123,8 @@
                     this.getDataList();
                 },
                 getDataList() {
+                    // 顯示資料載入畫面
+                    this.loadingStart();
                     const params = new URLSearchParams()
                     params.append("category", this.category)
                     params.append("startDate", this.searchDate.startDate)
@@ -148,11 +152,15 @@
                             });
                            this.classifiedDataList = this.dataClassify(res.data).dataListEachDate;
                            this.classifiedDataList.forEach(item => {
-                                    item.earning = item.totalIncome - item.totalExpense
+                              item.earning = item.totalIncome - item.totalExpense
                            })
                         }
-
+                        // 更新圖表
                         this.updateChart(res.data);
+                    })
+                    .finally(() => {
+                        // 關閉資料載入畫面
+                        this.loadingEnd();
                     })
                 },
                 dataClassify(dataList) {

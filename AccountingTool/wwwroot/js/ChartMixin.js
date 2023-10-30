@@ -2,16 +2,16 @@
     data() {
         return {
             chart: null,
-            colorList: ['Blue', 'Orange', 'Yellow', 'Green', 'Red'],
+            colorList: ['Violet', 'Khaki', 'PeachPuff', 'DarkGrey', 'SpringGreen', 'LightSteelBlue', 'NavajoWhite', 'HotPink', 'DarkKhaki', 'PaleGoldenrod', 'RebeccaPurple', 'DimGray', 'SkyBlue', 'MediumSeaGreen', 'RosyBrown', 'PaleVioletRed', 'Plum', 'Salmon', 'DodgerBlue', 'Wheat'],
             doughnutChartContent: {
                 type: 'doughnut',
                 data: {
                     labels: [],
                     datasets: [
                         {
-                            label: 'Dataset 1',
+                            label: '',
                             data: [],
-                            backgroundColor: ['Red', 'Orange', 'Yellow', 'Green', 'Blue'],
+                            backgroundColor: [],
                         }
                     ]
                 },

@@ -3,17 +3,26 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AccountingTool</title>
+    <title>我的計帳本 @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AccountingTool.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <div id="loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-white text-center"
+         style="z-index:10000">
+        <h2>資料載入中
+            <div class="progress mt-3" style="width: 250px">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
+                style="width: 100%"></div>
+            </div>
+        </h2>
+    </div>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AccountingTool</a>
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">我的計帳本</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,10 +30,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end">
                         <li class="nav-item">
-                            <button class="btn" id="logOutButton">登出</button>
+                            <button class="btn fw-bold" id="logOutButton">登出</button>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="/AccountingData/AccountPage/CreateAccount">註冊</a>
+                            <a class="nav-link text-dark fw-bold" href="/AccountingData/AccountPage/CreateAccount">註冊</a>
                         </li>
                     </ul>
                 </div>

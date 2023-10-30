@@ -70,6 +70,8 @@ namespace AccountingTool.Areas.API.Controllers
                 dataListSqlString = dataListSqlString + "AND AccountingDatas.Category = @category ";
             }
 
+            dataListSqlString = dataListSqlString + "ORDER BY AccountingDatas.Time DESC";
+
             IEnumerable<AccountingDataGet> DataListResult = new List<AccountingDataGet>();
             using (var conn = new SqlConnection(_connectionString))
             {

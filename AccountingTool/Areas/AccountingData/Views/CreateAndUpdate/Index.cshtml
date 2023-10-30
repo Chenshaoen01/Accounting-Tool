@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "新增/編輯資料";
+    ViewData["Title"] = " - 新增/編輯資料";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -107,16 +107,22 @@
                 if ("@ViewBag.Category") {
                     this.form.category = "@ViewBag.Category";
                 }
-
+            }
+            , mounted() {
                 if ("@ViewBag.Id") {
                     // 設定資料Id
                     this.form.Id = "@ViewBag.Id";
                     // 依Id取得資料
                     this.getDataById();
                 }
+                // 關閉資料載入畫面
+                this.loadingEnd();
             }
             , methods: {
                 getDataById() {
+                    // 顯示資料載入畫面
+                    this.loadingStart();
+
                     const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id;
                     axios({
                         url: url,
@@ -124,10 +130,15 @@
                         headers: {
                             Authorization: `Bearer ${this.getToken()}`
                         }
-                    }).then((res) => {
+                    })
+                    .then((res) => {
                         this.form = res.data[0]
                         // 編輯日期格式
                         this.form.time = this.dateTransfer(res.data[0].time)
+                    })
+                    .finally(() => {
+                        // 關閉資料載入畫面
+                        this.loadingEnd();
                     })
                 },
                 getCategoryList() {
