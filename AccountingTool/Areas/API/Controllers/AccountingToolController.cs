@@ -63,8 +63,8 @@ namespace AccountingTool.Areas.API.Controllers
             string dataListSqlString =
             "SELECT * FROM AccountingDatas " +
             "WHERE AccountingDatas.UserId = @userId " +
-            "AND AccountingDatas.Time > @startDate " +
-            "AND AccountingDatas.Time < @endDate ";
+            "AND AccountingDatas.Time >= @startDate " +
+            "AND AccountingDatas.Time <= @endDate ";
 
             if(category == "expense" || category == "income") {
                 dataListSqlString = dataListSqlString + "AND AccountingDatas.Category = @category ";

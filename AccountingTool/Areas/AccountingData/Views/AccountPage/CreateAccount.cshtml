@@ -10,17 +10,17 @@
             @* 信箱(帳號) *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 信箱(帳號)
-                <input type="text" class="form-control" v-model="form.email">
+                <input type="text" class="form-control" v-model="form.email.value">
             </label>
             @* 密碼 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 密碼
-                <input type="password" class="form-control" v-model="form.password">
+                <input type="password" class="form-control" v-model="form.password.value">
             </label>
             @* 確認密碼 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 確認密碼
-                <input type="password" class="form-control" v-model="form.passwordConfirm">
+                <input type="password" class="form-control" v-model="passwordConfirm">
             </label>
 
             @* 送出按鈕 *@
@@ -33,33 +33,40 @@
 @section scripts{
     <script>
         const app = Vue.createApp({
+            mixins: [VueMxin],
             data() {
                 return {
                     form: {
-                        email: null, password: null, passwordConfirm: null
+                        email: { value: null, columnName: "信箱(帳號)", validateTypes: ["required", "email"] },
+                        password: { value: null, columnName: "密碼", validateTypes: ["required"] }
                     },
+                    passwordConfirm: null
                 }
             }
             , created() {
             }
             , methods: {
                 createAccountSubmit() {
-                    if (this.form.password === this.form.passwordConfirm) {
-                        const url = window.location.origin + "/api/Users/CreateAccount"
-                        const UserData = {
-                            email: this.form.email,
-                            password: this.form.password
+                    // 進行表單驗證
+                    const ValidateResult = this.validate(this.form);
+                    if (ValidateResult.length > 0) {
+                        this.modalShow(ValidateResult, "error");
+                    } else { 
+                        // 檢查密碼是否相符
+                        if (this.form.password.value === this.passwordConfirm) {
+                            const url = window.location.origin + "/api/Users/CreateAccount"
+                            const data = this.getAxiosData(this.form);
+                            axios.post(url, data)
+                                .then(() => {
+                                    window.location = window.location.origin + "/AccountingData/AccountPage/Login"
+                                    this.modalShow("帳號建立成功", "succcess");
+                                })
+                                .catch(() => {
+                                    this.modalShow("帳號建立失敗", "error");
+                                })
+                        } else {
+                            this.modalShow("密碼 與 確認密碼 不相符", "error");
                         }
-                        axios.post(url, UserData)
-                            .then(() => {
-                                window.location = window.location.origin + "/AccountingData/AccountPage/Login"
-                                alert("帳號建立成功")
-                            })
-                            .catch(() => {
-                                alert("帳號建立失敗")
-                            })
-                    } else {
-                        alert("密碼 與 確認密碼 不相符")
                     }
                 }
             }

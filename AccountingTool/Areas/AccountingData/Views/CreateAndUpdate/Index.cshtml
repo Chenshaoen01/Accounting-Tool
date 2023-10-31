@@ -10,7 +10,7 @@
             @* 支出/收入 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 支出/收入
-                <select class="form-select" v-model="form.category" :disabled="mode === 'Edit'">
+                <select class="form-select" v-model="form.category.value" :disabled="mode === 'Edit'">
                     <option value="expense">支出</option>
                     <option value="income">收入</option>
                 </select>
@@ -18,7 +18,7 @@
             @* 種類 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 種類
-                <select class="form-select" v-model="form.label">
+                <select class="form-select" v-model="form.label.value">
                     <option :value="item.id" v-for="item in categoryList" :key="item.id">
                         <i :class="item.labelContent.icon"></i>
                         {{item.name}}
@@ -28,17 +28,17 @@
             @* 日期 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 日期
-                <input type="date" class="form-control" v-model="form.time" />
+                <input type="date" class="form-control" v-model="form.time.value" />
             </label>
             @* 備註 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 備註
-                <input type="text" class="form-control" v-model="form.description">
+                <input type="text" class="form-control" v-model="form.description.value">
             </label>
             @* 金額 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 金額
-                <input type="number" class="form-control" v-model="form.price">
+                <input type="number" class="form-control" v-model="form.price.value">
             </label>
 
             @* 計算機 *@
@@ -90,7 +90,13 @@
                     categoryList: null,
                     mode: null,
                     form: {
-                        Id: null, category: "expense", label: null, time: null, description: null, price: null
+                        Id: { value: null, columnName: "Id", validateTypes: [] },
+                        category: { value: "expense", columnName: "支出/收入", validateTypes: ["required"] },
+                        label: { value: null, columnName: "種類", validateTypes: ["required"] },
+                        time: { value: null, columnName: "日期", validateTypes: ["required"] },
+                        description: { value: null, columnName: "備註", validateTypes: [] },
+                        price: { value: null, columnName: "金額", validateTypes: ["required"] },
+                        // Id: null, category: "expense", label: null, time: null, description: null, price: null
                     },
                 }
             }
@@ -105,13 +111,13 @@
                     this.mode = "Edit";
                 }
                 if ("@ViewBag.Category") {
-                    this.form.category = "@ViewBag.Category";
+                    this.form.category.value = "@ViewBag.Category";
                 }
             }
             , mounted() {
                 if ("@ViewBag.Id") {
                     // 設定資料Id
-                    this.form.Id = "@ViewBag.Id";
+                    this.form.Id.value = "@ViewBag.Id";
                     // 依Id取得資料
                     this.getDataById();
                 }
@@ -123,7 +129,7 @@
                     // 顯示資料載入畫面
                     this.loadingStart();
 
-                    const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id;
+                    const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id.value;
                     axios({
                         url: url,
                         method: "GET",
@@ -132,9 +138,13 @@
                         }
                     })
                     .then((res) => {
-                        this.form = res.data[0]
+                        for(let key in res.data[0]) {
+                           if (this.form[key] !== undefined) {
+                              this.form[key].value = res.data[0][key]
+                           }
+                        }
                         // 編輯日期格式
-                        this.form.time = this.dateTransfer(res.data[0].time)
+                        this.form.time.value = this.dateTransfer(res.data[0].time)
                     })
                     .finally(() => {
                         // 關閉資料載入畫面
@@ -154,26 +164,32 @@
                     })
                 },
                 submit() {
-                    let action = "POST";
-                    if (this.mode === "Edit") {
-                        action = "PUT";
-                    }
+                    const ValidateResult = this.validate(this.form);
+                    if (ValidateResult.length > 0) {
+                        this.modalShow(ValidateResult, "error");
+                    } else { 
+                        let action = "POST";
+                        if (this.mode === "Edit") {
+                            action = "PUT";
+                        }
 
-                    const url = window.location.origin + "/api/AccountingTool"
-                    axios({
-                        url: url,
-                        method: action,
-                        data: this.form,
-                        headers: {
-                            Authorization: `Bearer ${this.getToken()}`
-                        }
-                    }).then((res) => {
-                        if (this.mode === "Create") {
-                            alert("成功建立資料");
-                        }else{
-                            alert("成功更新資料");
-                        }
-                    })
+                        const url = window.location.origin + "/api/AccountingTool"
+                        const data = this.getAxiosData(this.form);
+                        axios({
+                            url: url,
+                            method: action,
+                            data: data,
+                            headers: {
+                                Authorization: `Bearer ${this.getToken()}`
+                            }
+                        }).then((res) => {
+                            if (this.mode === "Create") {
+                                alert("成功建立資料");
+                            } else {
+                                alert("成功更新資料");
+                            }
+                        })
+                    }
                 }
             }
         });

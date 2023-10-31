@@ -16,6 +16,9 @@
                     ]
                 },
                 options: {
+                    animation: {
+                        duration: 0
+                    },
                     responsive: true,
                     plugins: {
                         legend: {
@@ -33,26 +36,29 @@
                         label: '每月盈餘',
                         data: [],
                         fill: false,
-                        borderColor: 'Orange',
+                        borderColor: 'Violet',
                         tension: 0.1
                         },
                     {
                         label: '每月支出',
                         data: [],
                         fill: false,
-                        borderColor: 'Blue',
+                        borderColor: 'Khaki',
                         tension: 0.1
                         },
                     {
                         label: '每月收入',
                         data: [],
                         fill: false,
-                        borderColor: 'Yellow',
+                        borderColor: 'PeachPuff',
                         tension: 0.1
                     },
                     ]
                 },
                 options: {
+                    animation: {
+                        duration: 0
+                    },
                     responsive: true,
                     plugins: {
                         legend: {

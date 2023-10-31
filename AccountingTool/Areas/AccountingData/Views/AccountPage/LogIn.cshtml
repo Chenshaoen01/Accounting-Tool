@@ -10,18 +10,18 @@
             @* 信箱(帳號) *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 信箱(帳號)
-                <input type="text" class="form-control" v-model="form.email">
+                <input type="text" class="form-control" v-model="form.email.value">
             </label>
             @* 密碼 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 密碼
-                <input type="password" class="form-control" v-model="form.password">
+                <input type="password" class="form-control" v-model="form.password.value">
             </label>
 
             @* 記住我 *@
             <label class="form-check-label d-flex justify-content-start">
                 記住我
-                <input class="form-check-input ms-2" type="checkbox" v-model="form.remeberAccount">
+                <input class="form-check-input ms-2" type="checkbox" v-model="remeberAccount">
             </label>
 
             @* 送出按鈕 *@
@@ -34,10 +34,12 @@
 @section scripts{
     <script>
         const app = Vue.createApp({
+            mixins: [VueMxin],
             data() {
                 return {
                     form: {
-                        email: null, password: null
+                        email: { value: null, columnName: "信箱(帳號)", validateTypes: ["required", "email"] },
+                        password: { value: null, columnName: "密碼", validateTypes: ["required"] }
                     },
                     remeberAccount: false
                 }
@@ -46,39 +48,48 @@
                 this.checkLocalStorageData("email");
                 this.checkLocalStorageData("password");
 
-                this.form.remeberAccount = this.form.email != null && this.form.password != null
+                this.remeberAccount = this.form.email.value != null && this.form.password.value != null;
             }
             , methods: {
                 // 檢查 localStorage 裡面有沒有資料如果有的話寫到 form 裡面
                 checkLocalStorageData(key) {
-                    const localStorageData = localStorage.getItem(key)
+                    const localStorageData = localStorage.getItem(key);
                     if (localStorageData) {
-                        this.form[key] = localStorageData
+                        this.form[key].value = localStorageData;
                     }
                 },
                 logIn() {
-                    const url = window.location.origin + "/api/Users/logIn"
-                    axios.post(url, this.form)
-                        .then((res) => {
-                            // 於cookie寫入登入token
-                            document.cookie = `accountingToolToken=${res.data}; path=/`;
+                    const ValidateResult = this.validate(this.form);
+                    if (ValidateResult.length > 0) {
+                        this.modalShow(ValidateResult, "error");
+                    } else {
+                        const url = window.location.origin + "/api/Users/logIn";
+                        const data = this.getAxiosData(this.form);
 
-                            if (this.form.remeberAccount) {
-                                // 如果勾選 "記住我" 就在 localStorage 寫入 email 和 password
-                                localStorage.setItem("email", this.form.email)
-                                localStorage.setItem("password", this.form.password)
-                            }else{
-                                // 如果沒有勾選 "記住我" 就清除 localStorage 的 email 和 password
-                                localStorage.setItem("email", "")
-                                localStorage.setItem("password", "")
-                            }
-                            
-                            // 跳轉至首頁
-                            window.location = window.location.origin
-                        })
-                        .catch(() => {
-                            alert("帳號或密碼錯誤")
-                        })
+                        axios.post(url, data)
+                            .then((res) => {
+                                // 於cookie寫入登入token
+                                document.cookie = `accountingToolToken=${res.data}; path=/`;
+
+                                if (this.remeberAccount) {
+                                    // 如果勾選 "記住我" 就在 localStorage 寫入 email 和 password
+                                    localStorage.setItem("email", this.form.email.value);
+                                    localStorage.setItem("password", this.form.password.value);
+                                } else {
+                                    // 如果沒有勾選 "記住我" 就清除 localStorage 的 email 和 password
+                                    localStorage.setItem("email", "");
+                                    localStorage.setItem("password", "");
+                                }
+
+                                this.modalShow("登入成功", "succcess");
+
+                                // 跳轉至首頁
+                                window.location = window.location.origin;
+                            })
+                            .catch((err) => {
+                                this.modalShow("帳號或密碼錯誤", "error");
+                            })
+                    }
                 }
             }
         });

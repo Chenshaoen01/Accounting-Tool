@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/AccountingTool.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @* 資料載入畫面 *@
     <div id="loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-white text-center"
          style="z-index:10000">
         <h2>資料載入中
@@ -19,6 +20,18 @@
             </div>
         </h2>
     </div>
+    @* 提示modal *@
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:10001">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <h3 id="modal-body" class="modal-body w-100 text-center py-5"></h3>
+            </div>
+        </div>
+    </div>
+    @* 選單列 *@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom mb-3">
             <div class="container-fluid">
@@ -85,7 +98,7 @@
             }
         }).catch((error) => {
             if (error.response.status === 401) {
-                window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage"
+                window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage";
             }
         })
 
@@ -93,10 +106,8 @@
         logOutButton.addEventListener("click", function () {
             const date = new Date();
             date.setTime(date.getTime() - 1000000);
-            console.log(date)
             document.cookie = "accountingToolToken='';expires=" + date.toGMTString();
-
-            window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage"
+            window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage";
         })
         
     </script>
