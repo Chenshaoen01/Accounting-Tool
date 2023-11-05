@@ -5,17 +5,17 @@
 
 <div id="app" class="text-center">
     <div class="container max-width-500">
-        <h2>登入</h2>
+        <h2 class="fw-bold">登入</h2>
         <div>
             @* 信箱(帳號) *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 信箱(帳號)
-                <input type="text" class="form-control" v-model="form.email.value">
+                <input type="text" class="form-control bg-transparent border-dark fw-bold" v-model="form.email.value">
             </label>
             @* 密碼 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
                 密碼
-                <input type="password" class="form-control" v-model="form.password.value">
+                <input type="password" class="form-control bg-transparent border-dark fw-bold" v-model="form.password.value">
             </label>
 
             @* 記住我 *@
@@ -61,7 +61,7 @@
                 logIn() {
                     const ValidateResult = this.validate(this.form);
                     if (ValidateResult.length > 0) {
-                        this.modalShow(ValidateResult, "error");
+                        this.modalShow("項目填寫不完全或格式錯誤", ValidateResult, "error");
                     } else {
                         const url = window.location.origin + "/api/Users/logIn";
                         const data = this.getAxiosData(this.form);
@@ -81,10 +81,13 @@
                                     localStorage.setItem("password", "");
                                 }
 
-                                this.modalShow("登入成功", "succcess");
+                                this.modalShow("登入成功", "即將進入至首頁", "succcess");
 
                                 // 跳轉至首頁
-                                window.location = window.location.origin;
+                                setTimeout(() => {
+                                    window.location = window.location.origin;
+                                }, "2000")
+                                
                             })
                             .catch((err) => {
                                 this.modalShow("帳號或密碼錯誤", "error");

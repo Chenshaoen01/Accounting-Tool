@@ -9,16 +9,16 @@
         <div>
             @* 支出/收入 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                支出/收入
-                <select class="form-select" v-model="form.category.value" :disabled="mode === 'Edit'">
+                <span class="fw-bold">支出/收入</span>
+                <select class="form-select border border-dark bg-transparent" v-model="form.category.value" :disabled="mode === 'Edit'">
                     <option value="expense">支出</option>
                     <option value="income">收入</option>
                 </select>
             </label>
             @* 種類 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                種類
-                <select class="form-select" v-model="form.label.value">
+                <span class="fw-bold">種類</span>
+                <select class="form-select border border-dark bg-transparent" v-model="form.label.value">
                     <option :value="item.id" v-for="item in categoryList" :key="item.id">
                         <i :class="item.labelContent.icon"></i>
                         {{item.name}}
@@ -27,30 +27,30 @@
             </label>
             @* 日期 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                日期
-                <input type="date" class="form-control" v-model="form.time.value" />
+                <span class="fw-bold">日期</span>
+                <input type="date" class="form-control border border-dark bg-transparent" v-model="form.time.value" />
             </label>
             @* 備註 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                備註
-                <input type="text" class="form-control" v-model="form.description.value">
+                <span class="fw-bold">備註</span>
+                <input type="text" class="form-control border border-dark bg-transparent" v-model="form.description.value">
             </label>
             @* 金額 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
-                金額
-                <input type="number" class="form-control" v-model="form.price.value">
+                <span class="fw-bold">金額</span>
+                <input type="number" class="form-control border border-dark bg-transparent" v-model="form.price.value">
             </label>
 
             @* 計算機 *@
-            <div class="border rounded p-3 mb-3">
-                <input type="text" class="form-control" v-model="calculator.processDescription">
+            <div class="border border-dark rounded p-3 mb-3">
+                <input type="text" class="form-control border border-dark bg-transparent" v-model="calculator.processDescription">
                 <div class="container mt-3">
                     <div class="row">
                         @* 數字區域 *@
                         <div class="col-8 container mt-3">
-                            <div class="row gy-3 border-end">
+                            <div class="row gy-3 border-end border-dark">
                                 <div class="col-4 d-flex justify-content-center" v-for="item in calculator.numberList" :key="item">
-                                    <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-white calculatorButton"
+                                    <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-transparent calculatorButton"
                                             v-on:click="calculatorButtonFunction(item.value)">
                                         <span class="fs-3" v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
                                         <span class="fs-3" v-else>{{item.buttonContent}}</span>
@@ -62,7 +62,7 @@
                         <div class="col-4 container mt-3">
                             <div class="row gy-3">
                                 <div class="col-6 d-flex justify-content-center" v-for="item in calculator.buttonList" :key="item">
-                                    <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-white calculatorButton"
+                                    <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-transparent calculatorButton"
                                             v-on:click="calculatorButtonFunction(item.value)">
                                         <span class="fs-3" v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
                                         <span class="fs-3" v-else>{{item.buttonContent}}</span>
@@ -96,7 +96,6 @@
                         time: { value: null, columnName: "日期", validateTypes: ["required"] },
                         description: { value: null, columnName: "備註", validateTypes: [] },
                         price: { value: null, columnName: "金額", validateTypes: ["required"] },
-                        // Id: null, category: "expense", label: null, time: null, description: null, price: null
                     },
                 }
             }
@@ -164,29 +163,29 @@
                     })
                 },
                 submit() {
+                    // 進行表單驗證
                     const ValidateResult = this.validate(this.form);
                     if (ValidateResult.length > 0) {
-                        this.modalShow(ValidateResult, "error");
+                        this.modalShow("項目填寫不完全或格式錯誤", ValidateResult, "error");
                     } else { 
-                        let action = "POST";
-                        if (this.mode === "Edit") {
-                            action = "PUT";
-                        }
-
-                        const url = window.location.origin + "/api/AccountingTool"
-                        const data = this.getAxiosData(this.form);
                         axios({
-                            url: url,
-                            method: action,
-                            data: data,
+                            url: window.location.origin + "/api/AccountingTool",
+                            method: this.mode === "Edit" ? "PUT" : "POST",
+                            data: this.getAxiosData(this.form),
                             headers: {
                                 Authorization: `Bearer ${this.getToken()}`
                             }
                         }).then((res) => {
                             if (this.mode === "Create") {
-                                alert("成功建立資料");
+                                this.modalShow("成功建立資料", null, "success");
                             } else {
-                                alert("成功更新資料");
+                                this.modalShow("成功更新資料", null, "success");
+                            }
+                        }).catch((err) => {
+                            if (this.mode === "Create") {
+                                this.modalShow("建立資料失敗", null, "error");
+                            } else {
+                                this.modalShow("更新資料失敗", null, "error");
                             }
                         })
                     }

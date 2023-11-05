@@ -4,14 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>我的計帳本 @ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/bootstrap-icons/font/bootstrap-icons.css" />
+
+    @* bootstrap *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    @* bootstrap-icon *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AccountingTool.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="bg-layout">
     @* 資料載入畫面 *@
-    <div id="loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-white text-center"
+    <div id="loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-layout text-center"
          style="z-index:10000">
         <h2>資料載入中
             <div class="progress mt-3" style="width: 250px">
@@ -24,16 +28,16 @@
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:10001">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header py-2">
+                <div class="modal-header py-2 bg-layout-dark">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <h3 id="modal-body" class="modal-body w-100 text-center py-5"></h3>
+                <h3 id="modal-body" class="modal-body w-100 text-center py-5 bg-layout"></h3>
             </div>
         </div>
     </div>
     @* 選單列 *@
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-layout-dark mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">我的計帳本</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -43,7 +47,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-end">
                         <li class="nav-item">
-                            <button class="btn fw-bold" id="logOutButton">登出</button>
+                            <a id="logOutButton" class="nav-link text-dark fw-bold" href="/AccountingData/AccountPage/UnauthorizedPage">登出</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark fw-bold" href="/AccountingData/AccountPage/CreateAccount">註冊</a>
@@ -58,22 +62,23 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - AccountingTool - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    @* jquery *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* vue *@
     <script src="~/vue/vue.global.min.js"></script>
-    <script src="~/Chart.js/chart.min.js"></script>
-    <script src="~/Chart.js/chart.umd.js"></script>
     <script src="~/js/calculatorMixin.js"></script>
     <script src="~/js/VueMixin.js"></script>
+    @* chart.js *@
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="~/js/ChartMixin.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* bootstrap *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    @* axios *@
     <script src="~/axios/axios.js" asp-append-version="true"></script>
+    @* default JS *@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
     
     @await RenderSectionAsync("Scripts", required: false)
 
@@ -102,12 +107,18 @@
             }
         })
 
-        const logOutButton = document.getElementById('logOutButton')
-        logOutButton.addEventListener("click", function () {
+        // 登出時刪除cookie
+        const deleteCookie = function(cookieName) {
             const date = new Date();
             date.setTime(date.getTime() - 1000000);
-            document.cookie = "accountingToolToken='';expires=" + date.toGMTString();
-            window.location = window.location.origin + "/AccountingData/AccountPage/UnauthorizedPage";
+            document.cookie = `${cookieName}='';expires=` + date.toGMTString();
+        }
+        const logOutButton = document.getElementById('logOutButton')
+        logOutButton.addEventListener("click", function () {
+            deleteCookie("accountingToolToken");
+            deleteCookie("category");
+            deleteCookie("startDate");
+            deleteCookie("endDate");
         })
         
     </script>

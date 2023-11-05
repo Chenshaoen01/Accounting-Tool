@@ -7,67 +7,97 @@
         @* 切換支出/收入/盈餘 *@
         <div class="btn-group btn-group-lg mb-3" role="group" aria-label="Basic example">
             <button v-for="item in buttonGroupItems" :key="'button-group-'+item.value" v-on:click="changeCategory(item.value)"
-                    type="button" :id="'button-group-'+item.value" class="btn border shadow-none">
+                    type="button" :id="'button-group-'+item.value" class="btn border border-dark shadow-none">
                 {{item.text}}
             </button>
         </div>
         @* 輸入時間篩選條件 *@
-        <div class="text-start border rounded mb-3 p-3">
+        <div class="text-start border border-dark rounded mb-3 p-3">
             <h5 class="fw-bold mb-3">時間篩選條件</h5>
             <div class="d-flex align-items-center mb-3">
-                <span class="me-3">從</span><input type="date" class="form-control"
-                v-model="searchDate.startDate" v-on:change="getDataList" />
+                <span class="me-3">從</span>
+                <input type="date" class="form-control border border-dark bg-transparent" v-model="searchDate.startDate" v-on:change="getDataList" />
             </div>
             <div class="d-flex align-items-center">
-                <span class="me-3">到</span><input type="date" class="form-control"
-                v-model="searchDate.endDate"  v-on:change="getDataList"/>
+                <span class="me-3">到</span>
+                <input type="date" class="form-control border border-dark bg-transparent" v-model="searchDate.endDate" v-on:change="getDataList" />
             </div>
         </div>
         @* 圖表區域 *@
-        <canvas id="myChart" class="mb-5 w-75 h-75 mx-auto"></canvas>
-        @* 資料細項 *@
-        <h3 class="py-5" v-if="classifiedDataList.length ===0">查無資料</h3>
-        <div class="accordion mb-3">
-            <div class="accordion-item mb-3" v-for="(item, index) in classifiedDataList" :key="item.date">
-                <h2 class="accordion-header" id="headingOne">
-                    <div class="bg-dark text-white w-100 fs-5 p-2 ps-3 text-start" type="button"
-                    data-bs-toggle="collapse" :data-bs-target="'#'+'data-'+item.date"
-                    aria-expanded="true" :aria-controls="'data-'+item.date">
-                        <span class="ms-2">{{item.date}}</span>
-                        <span class="ms-2" v-if="category === 'earning'">盈餘：{{item.earning}}元</span>
-                        <span class="ms-2" v-if="category === 'expense'">總支出：{{item.totalExpense}}元</span>
-                        <span class="ms-2" v-if="category === 'income'">總收入：{{item.totalIncome}}元</span>
-                    </div>
-                </h2>
-                @* 資料列表 *@
-                <div :id="'data-'+item.date" class="accordion-collapse collapse show" aria-labelledby="headingOne">
-                    <div class="accordion-body text-start border-bottom px-2">
-                        <div class="d-flex flex-column border p-2 mb-2" v-if="category === 'earning'">
-                            <span class="ms-2">總支出：{{item.totalExpense}}元</span>
-                            <span class="ms-2">總收入：{{item.totalIncome}}元</span>
+        <div class="border border-dark p-3 mb-3 rounded">
+            <div v-show="timeClassifiedDataList.length >0">
+                <canvas id="myChart" class="mb-5 w-75 h-75 mx-auto"></canvas>
+            </div>
+            @* 各類別金額 *@
+            <div class="border border-dark mb-3 py-3 container"
+                 v-for="categoryData in labelPriceCalculateDataList"
+                 :key="categoryData.categoryName">
+                <h4 class="fw-bold">各類別{{categoryData.categoryName}}統計</h4>
+                <div class="row">
+                    <span class="col-sm-6" v-for="labelData in categoryData.dataList" :key="labelData.labelName">
+                        <div class="my-2">
+                            <span class="me-3"><i :class="labelData.labelIcon"></i></span>
+                            <span class="me-1">{{labelData.labelName}}</span>
+                            <span>{{labelData.price}}元</span>
                         </div>
-                        <div class="d-flex flex-column border p-2 mb-2" v-for="dataItem in item.dataItemsForThisDate">
-                            <div class="d-flex justify-content-between align-items-center p-2">
-                                <div>
-                                    <i :class="dataItem.labelContent.icon"></i>
-                                    <span class="ms-2">{{dataItem.labelContent.name}}</span>
-                                    <span class="ms-2">{{dataItem.price}}元</span>
-                                </div>
-                                <div>
-                                    <button type="button" class="btn btn-dark me-2" v-on:click="editPage(dataItem.id)">編輯</button>
-                                    <button type="button" class="btn btn-dark" v-on:click="deleteData(dataItem.id)">刪除</button>
-                                </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+        @* 資料細項 *@
+        <div class="border border-dark p-3 bg-transparent rounded">
+            <h4 class="fw-bold">單{{this.category === "earning"? "月":"日"}}資料明細</h4>
+            @* 新增按鈕 *@
+            <div class="d-flex mb-2">
+                <button type="button" class="btn btn-dark shadow-none ms-auto" v-on:click="createPage">
+                    <i class="bi bi-plus-circle me-2"></i>新增資料
+                </button>
+            </div>
+            <h3 class="py-3" v-if="timeClassifiedDataList.length ===0">查無資料</h3>
+            <div class="accordion mb-3">
+                <div class="accordion-item mb-3 border border-dark bg-transparent" v-for="(item, index) in timeClassifiedDataList" :key="item.date">
+                    <h2 class="accordion-header" id="headingOne">
+                        <div class="bg-dark text-white w-100 fs-5 p-2 ps-3 text-start d-flex justify-content-between align-items-center"
+                             data-bs-toggle="collapse" :data-bs-target="'#'+'data-'+item.date"
+                             aria-expanded="true" :aria-controls="'data-'+item.date" v-on:click="spanStatusToggle(item)">
+                             <div class="d-flex flex-column flex-sm-row">
+                                <span class="ms-2">{{item.date}}</span>
+                                <span class="ms-2" v-if="category === 'earning'">盈餘：{{item.earning}}元</span>
+                                <span class="ms-2" v-if="category === 'expense'">總支出：{{item.totalExpense}}元</span>
+                                <span class="ms-2" v-if="category === 'income'">總收入：{{item.totalIncome}}元</span>
+                             </div>
+                             <div class="pe-2">
+                                <i class="bi bi-chevron-up ms-auto" v-if="item.spanned"></i>
+                                <i class="bi bi-chevron-down ms-auto" v-else></i>
+                             </div>
+                        </div>
+                    </h2>
+                    @* 資料列表 *@
+                    <div :id="'data-'+item.date" class="accordion-collapse collapse show" aria-labelledby="headingOne">
+                        <div class="accordion-body text-start border-bottom px-2">
+                            <div class="d-flex flex-column border border-dark p-2 mb-2" v-if="category === 'earning'">
+                                <span class="ms-2">總支出：{{item.totalExpense}}元</span>
+                                <span class="ms-2">總收入：{{item.totalIncome}}元</span>
                             </div>
-                            <span class="border-top p-2">備註：{{dataItem.description}}</span>
+                            <div class="d-flex flex-column border border-dark p-2 mb-2" v-for="dataItem in item.dataItemsForThisDate">
+                                <div class="d-flex justify-content-between align-items-center p-2">
+                                    <div>
+                                        <i :class="dataItem.labelContent.icon"></i>
+                                        <span class="ms-2">{{dataItem.labelContent.name}}</span>
+                                        <span class="ms-2">{{dataItem.price}}元</span>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-dark me-2" v-on:click="editPage(dataItem.id)">編輯</button>
+                                        <button type="button" class="btn btn-dark" v-on:click="deleteData(dataItem.id)">刪除</button>
+                                    </div>
+                                </div>
+                                <span class="border-top border-dark p-2">備註：{{dataItem.description}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        @* 新增按鈕 *@
-        <button type="button" class="btn shadow-none" v-on:click="createPage">
-            <i class="bi bi-plus-circle-fill fs-2"></i>
-        </button>
     </div>
 </div>
 @section scripts{
@@ -85,25 +115,35 @@
                         startDate: null,
                         endDate: null
                     },
-                    category: "expense",
+                    category: null,
                     dataList: [],
-                    classifiedDataList: []
+                    labelPriceCalculateDataList: [],
+                    timeClassifiedDataList: []
                 }
             }
             ,created() {
+                this.setSearchData();
+                // 預設模式為支出
+                if(!this.category) {
+                    this.category = "expense"
+                }
                 // 預設資料篩選時間從三個月前到今天
-                const currentDate = new Date();
-                this.searchDate.endDate = this.dateTransfer(currentDate);
-
-                const oneMonthAgDate = new Date();
-                oneMonthAgDate.setMonth(currentDate.getMonth() - 3);
-                this.searchDate.startDate = this.dateTransfer(oneMonthAgDate);
+                if (!this.searchDate.endDate) {
+                    const currentDate = new Date();
+                    this.searchDate.endDate = this.dateTransfer(currentDate);
+                }
+                if (!this.searchDate.startDate) {
+                    const currentDate = new Date();
+                    const oneMonthAgDate = new Date();
+                    oneMonthAgDate.setMonth(currentDate.getMonth() - 3);
+                    this.searchDate.startDate = this.dateTransfer(oneMonthAgDate);
+                }
             }
             , mounted() {
                 // 顯示資料載入畫面
                 this.loadingStart();
                 // 預設模式為"支出"，並搜尋資料
-                this.changeCategory("expense")
+                this.changeCategory(this.category)
             }
             , methods: {
                 changeCategory(categoryButtonItemValue) {
@@ -139,19 +179,25 @@
                         }
                     })
                     .then((res) => {
+                        // 計算各類別的金額
+                        this.labelPriceCalculateDataList = [];
+                        this.labelPriceCalculate("expense", res.data);
+                        this.labelPriceCalculate("income", res.data);
+
+                        // 依日期分組
                         if(this.category === "expense" || this.category === "income") {
                             // 如果當前模式為支出/收入依日期分組
                             res.data.forEach(item => {
-                                item.time = this.dateTransfer(item.time)
+                                item.time = this.dateTransferChWords(item.time)
                             });
-                           this.classifiedDataList = this.dataClassify(res.data).dataListEachDate;
+                                this.timeClassifiedDataList = this.timeClassify(res.data).dataListEachDate;
                         }else{
                             // 如果當前模式為盈餘依月份分組
                             res.data.forEach(item => {
-                               item.time = this.dateTransferToMonth(item.time)
+                               item.time = this.dateTransferToMonthChWords(item.time)
                             });
-                           this.classifiedDataList = this.dataClassify(res.data).dataListEachDate;
-                           this.classifiedDataList.forEach(item => {
+                           this.timeClassifiedDataList = this.timeClassify(res.data).dataListEachDate;
+                           this.timeClassifiedDataList.forEach(item => {
                               item.earning = item.totalIncome - item.totalExpense
                            })
                         }
@@ -163,7 +209,7 @@
                         this.loadingEnd();
                     })
                 },
-                dataClassify(dataList) {
+                timeClassify(dataList) {
                     // 依日期分類資料
                     const classifiedData = dataList.reduce((accumulator, currentValue) => {
                         const currentDate = currentValue.time;
@@ -194,6 +240,7 @@
                 dataListEachDateItem(firstItem) {
                     const result = {
                         date: firstItem.time,
+                        spanned: true,
                         earning: 0,
                         totalExpense: 0,
                         totalIncome: 0,
@@ -207,10 +254,55 @@
                     return result;
                     
                 },
+                labelPriceCalculate(category, dataList) {
+                    const DataListOfEachCategory = dataList.filter(item => item.category === category);
+                    const priceData = DataListOfEachCategory.reduce((accumulator, cuurentValue) => {
+                        const labelIndex = accumulator.labelList.indexOf(cuurentValue.labelContent.name);
+                        const isNewLabel = labelIndex === -1;
+                        if (isNewLabel) {
+                            accumulator.labelList.push(cuurentValue.labelContent.name);
+                            accumulator.priceList.push(this.dataListEachLabelItem(cuurentValue));
+                        } else {
+                            accumulator.priceList[labelIndex].price += cuurentValue.price;
+                        }
+                        return accumulator; W
+                    },
+                    {
+                        labelList: [],
+                        priceList: []
+                    })
+
+                    const totalPrice = priceData.priceList.reduce((accumulator, cuurentValue) => {
+                        return accumulator + cuurentValue.price;
+                    }, 0)
+
+                    if (priceData.priceList.length >0) {
+                        this.labelPriceCalculateDataList.push(
+                            {
+                                totalPrice: totalPrice,
+                                categoryName: category === "expense" ? "支出" : "收入",
+                                dataList: priceData.priceList
+                            }
+                        );
+                    }
+                },
+                dataListEachLabelItem(firstItem) {
+                    return {
+                        labelName: firstItem.labelContent.name,
+                        labelIcon: firstItem.labelContent.icon,
+                        price: firstItem.price
+                    }
+                },
+                spanStatusToggle(targetData) {
+                    targetData.spanned = !targetData.spanned;
+                },
                 createPage() {
+                    this.storeSearchDataCookie();
                     window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Create?category=" + this.category;
+                    
                 },
                 editPage(dataId) {
+                    this.storeSearchDataCookie();
                     window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Edit?Id=" + dataId;
                 },
                 deleteData(dataId) {

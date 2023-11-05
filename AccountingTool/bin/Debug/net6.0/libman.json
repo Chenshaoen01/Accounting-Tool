@@ -19,9 +19,16 @@
       "destination": "wwwroot/Chart.js/"
     },
     {
-      "provider": "cdnjs",
       "library": "axios@1.5.1",
       "destination": "wwwroot/axios/"
+    },
+    {
+      "library": "sweetalert@2.1.2",
+      "destination": "wwwroot/sweetalert/"
+    },
+    {
+      "library": "alertify.js@0.3.11",
+      "destination": "wwwroot/alertify.js/"
     }
   ]
 }
