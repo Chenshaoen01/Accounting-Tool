@@ -61,8 +61,10 @@
                     // 清空按鈕
                     this.calculator.processDescription = ""
                 } else if (buttonValue == "backSpace") {
+                    debugger
                     // backSpace按鈕
-                    this.calculator.processDescription = this.calculator.processDescription.substring(0, this.calculator.processDescription - 1)
+                    this.calculator.processDescription = this.calculator.processDescription.substring(0, this.calculator.processDescription.length - 1)
+                    debugger
                 } else if (buttonValue == "=") {
                     // 計算按鈕
                     const scriptStringArr = this.calculator.processDescription.split("")
@@ -93,7 +95,7 @@
                     this.calculator.processDescription = calculateResult.toString();
                 } else if (buttonValue == "send") {
                     // 送出按鈕
-                    this.form.price = this.calculator.processDescription
+                    this.form.price.value = this.calculator.processDescription
                 }
             }
         }

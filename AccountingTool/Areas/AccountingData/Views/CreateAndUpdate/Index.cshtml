@@ -52,20 +52,20 @@
                                 <div class="col-4 d-flex justify-content-center" v-for="item in calculator.numberList" :key="item">
                                     <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-transparent calculatorButton"
                                             v-on:click="calculatorButtonFunction(item.value)">
-                                        <span class="fs-3" v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
-                                        <span class="fs-3" v-else>{{item.buttonContent}}</span>
+                                        <span v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
+                                        <span v-else>{{item.buttonContent}}</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
                         @* 功能按鈕區域 *@
                         <div class="col-4 container mt-3">
-                            <div class="row gy-3">
+                            <div class="row gy-3 gx-2">
                                 <div class="col-6 d-flex justify-content-center" v-for="item in calculator.buttonList" :key="item">
                                     <button type="button" class="d-flex align-items-center justify-content-center border border-dark bg-transparent calculatorButton"
                                             v-on:click="calculatorButtonFunction(item.value)">
-                                        <span class="fs-3" v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
-                                        <span class="fs-3" v-else>{{item.buttonContent}}</span>
+                                        <span v-if="item.type ==='icon'"><i :class="item.buttonContent"></i></span>
+                                        <span v-else>{{item.buttonContent}}</span>
                                     </button>
                                 </div>
                             </div>

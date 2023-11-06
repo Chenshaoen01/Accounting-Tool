@@ -58,7 +58,7 @@
                             const data = this.getAxiosData(this.form);
                             axios.post(url, data)
                                 .then(() => {
-                                    this.modalShow("帳號建立成功", "即將跳轉至登入頁面", "succcess");
+                                    this.modalShow("帳號建立成功", "即將進入登入頁面", "succcess");
 
                                     setTimeout(() => {
                                         window.location = window.location.origin + "/AccountingData/AccountPage/Login";
