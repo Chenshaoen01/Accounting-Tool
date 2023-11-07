@@ -51,29 +51,52 @@ namespace AccountingTool.Areas.API.Controllers
             return HashedPassword;
         }
 
+        //確認是否為新的信箱
+        public bool checkIfIsNewEmail(string Email)
+        {
+            string SqlString = "SELECT * FROM Users WHERE Email = @Email";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("Email", Email);
+
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var user = conn.Query(SqlString, parameters);
+                return user.Count() == 0;
+            }
+        }
+
         //建立帳號
         [HttpPost("CreateAccount")]
         public ActionResult CreateAccount(User userData)
         {
-            try
+            if (checkIfIsNewEmail(userData.Email))
             {
-                string hashedPassword = getHashedPassword(userData);
-
-                string SqlString = "INSERT INTO Users([Email], [Password]) VALUES (@Email, @Password)";
-                var parameters = new DynamicParameters();
-                parameters.Add("Email", userData.Email);
-                parameters.Add("Password", hashedPassword);
-
-                using (var conn = new SqlConnection(_connectionString))
+                try
                 {
-                    var result = conn.Execute(SqlString, parameters);
+                    string hashedPassword = getHashedPassword(userData);
+
+                    string SqlString = "INSERT INTO Users([Email], [Password]) VALUES (@Email, @Password)";
+                    var parameters = new DynamicParameters();
+                    parameters.Add("Email", userData.Email);
+                    parameters.Add("Password", hashedPassword);
+
+                    using (var conn = new SqlConnection(_connectionString))
+                    {
+                        var result = conn.Execute(SqlString, parameters);
+                    }
+                    return Ok("帳號建立成功");
                 }
-                return Ok("帳號建立成功");
+                catch
+                {
+                    return BadRequest("帳號建立失敗");
+                }
             }
-            catch
+            else
             {
-                return BadRequest("帳號建立失敗");
+                return BadRequest("此Email已被註冊");
             }
+
         }
 
         // 登入

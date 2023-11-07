@@ -13,9 +13,12 @@
                 <input type="text" class="form-control bg-transparent border-dark fw-bold" v-model="form.email.value">
             </label>
             @* 密碼 *@
-            <label class="form-label w-100 d-flex flex-column align-items-start">
+            <label class="form-label w-100 d-flex flex-column align-items-start position-relative">
                 密碼
-                <input type="password" class="form-control bg-transparent border-dark fw-bold" v-model="form.password.value">
+                <input type="text" class="form-control bg-transparent border-dark fw-bold" v-model="form.password.value" v-if="showPassword">
+                <input type="password" class="form-control bg-transparent border-dark fw-bold" v-model="form.password.value" v-else>
+                <i class="bi bi-eye-slash-fill password-toggle-button" v-on:click="passwordShowToggle" v-if="showPassword"></i>
+                <i class="bi bi bi-eye-fill password-toggle-button" v-on:click="passwordShowToggle" v-else></i>
             </label>
             @* 確認密碼 *@
             <label class="form-label w-100 d-flex flex-column align-items-start">
@@ -40,12 +43,17 @@
                         email: { value: null, columnName: "信箱(帳號)", validateTypes: ["required", "email"] },
                         password: { value: null, columnName: "密碼", validateTypes: ["required"] }
                     },
-                    passwordConfirm: null
+                    passwordConfirm: null,
+                    showPassword: false
                 }
             }
             , created() {
             }
             , methods: {
+                // 切換密碼隱藏/顯示
+                passwordShowToggle() {
+                    this.showPassword = !this.showPassword;
+                },
                 createAccountSubmit() {
                     // 進行表單驗證
                     const ValidateResult = this.validate(this.form);
@@ -64,8 +72,8 @@
                                         window.location = window.location.origin + "/AccountingData/AccountPage/Login";
                                     }, "2000")
                                 })
-                                .catch(() => {
-                                    this.modalShow("帳號建立失敗", null, "error");
+                                .catch((err) => {
+                                    this.modalShow(err.response.data, null, "error");
                                 })
                         } else {
                             this.modalShow("密碼 與 確認密碼 不相符", null, "error");
