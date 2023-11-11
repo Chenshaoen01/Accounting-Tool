@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Azure.Core;
 using NuGet.Versioning;
 using System.Collections.Generic;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,11 +17,11 @@ namespace AccountingTool.Areas.API.Controllers
     public class AccountingToolController : ControllerBase
     {
         public readonly string _connectionString;
-        //public readonly AccountingContext _accountingContext;
-        public AccountingToolController(IConfiguration configuration /*AccountingContext accountingContext*/)
+        private readonly AccountingContext _context;
+        public AccountingToolController(IConfiguration configuration, AccountingContext context)
         {
             _connectionString = configuration.GetValue<string>("ConnectionStrings:Default");
-            //_accountingContext = accountingContext;
+            _context = context;
         }
 
         //讀取token資料
@@ -37,57 +38,32 @@ namespace AccountingTool.Areas.API.Controllers
             return UserId;
         }
 
-        //取得類別列表
-        public IEnumerable<Label> getLabelList()
-        {
-            string labelSqlString = "SELECT * FROM Labels";
-            using (var conn = new SqlConnection(_connectionString))
-            {
-               return conn.Query<Label>(labelSqlString);
-            }
-        }
-
         //取得資料列表
         [HttpGet("getDataList")]
         public ActionResult Get(string category, string startDate, string endDate)
         {
             string userId = readTokenUserId(Request);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("userId", userId);
-            parameters.Add("category", category);
-            parameters.Add("startDate", startDate.ToString());
-            parameters.Add("endDate", endDate.ToString());
+            var DataListResult = _context.AccountingDatas
+                .Where(a => a.UserId == Int32.Parse(userId))
+                .Where(a => a.Time >= DateTime.Parse(startDate))
+                .Where(a => a.Time <= DateTime.Parse(endDate))
+                .Select(a => new AccountingDataGet
+                 {
+                     Id = a.Id,
+                     UserId = a.UserId,
+                     Description = a.Description,
+                     Category = a.Category,
+                     Label = a.Label,
+                     LabelContent = _context.Labels.Where(b => b.Id == a.Label).FirstOrDefault(),
+                     Time = a.Time,
+                     Price = a.Price
+                 });
 
-            //取得符合UserId、日期、類型的資料列表
-            string dataListSqlString =
-            "SELECT * FROM AccountingDatas " +
-            "WHERE AccountingDatas.UserId = @userId " +
-            "AND AccountingDatas.Time >= @startDate " +
-            "AND AccountingDatas.Time <= @endDate ";
-
-            if(category == "expense" || category == "income") {
-                dataListSqlString = dataListSqlString + "AND AccountingDatas.Category = @category ";
-            }
-
-            dataListSqlString = dataListSqlString + "ORDER BY AccountingDatas.Time DESC";
-
-            IEnumerable<AccountingDataGet> DataListResult = new List<AccountingDataGet>();
-            using (var conn = new SqlConnection(_connectionString))
+            if (category == "expense" || category == "income")
             {
-                DataListResult = conn.Query<AccountingDataGet>(dataListSqlString, parameters);
+                DataListResult = DataListResult.Where(a => a.Category == category);
             }
-
-            //取得label資料列表
-            IEnumerable<Label> LabelResult = getLabelList();
-
-            //將符合dataList label 的label 資料寫入
-            foreach (var data in DataListResult)
-            {
-                Label label = LabelResult.FirstOrDefault(x => x.Id == data.Label);
-                data.LabelContent = label;
-            }
-
             return Ok(DataListResult);
         }
 
@@ -95,39 +71,31 @@ namespace AccountingTool.Areas.API.Controllers
         [HttpGet("getData/{id}")]
         public ActionResult Get(int id)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", id);
-            string SqlString = "SELECT * FROM AccountingDatas WHERE Id = @Id";
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                var result = conn.Query<Models.AccountingData>(SqlString, parameters);
-                return Ok(result);
-            }
+            var data = _context.AccountingDatas.Where(a => a.Id == id);
+            return Ok(data);
         }
 
         //新增資料
         [HttpPost]
         public ActionResult Post(Models.AccountingDataPost accountingData)
         {
-            string userId = readTokenUserId(Request);
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", null);
-            parameters.Add("Description", accountingData.Description);
-            parameters.Add("Category", accountingData.Category);
-            parameters.Add("UserId", userId);
-            parameters.Add("Label", accountingData.Label);
-            parameters.Add("Time", accountingData.Time);
-            parameters.Add("Price", accountingData.Price);
-
-            string SqlString =
-                "INSERT INTO AccountingDatas" +
-                 "([Description], [Category], [UserId], [Label], [Time], [Price])" +
-                "VALUES (@Description, @Category, @UserId, @Label, @Time, @Price)";
-
-            using (var conn = new SqlConnection(_connectionString))
+            try
             {
-                var result = conn.Execute(SqlString, parameters);
-                return Ok(result);
+                Models.AccountingData newData = new Models.AccountingData()
+                {
+                    Description = accountingData.Description,
+                    Category = accountingData.Category,
+                    UserId = Int32.Parse(readTokenUserId(Request)),
+                    Label = accountingData.Label,
+                    Time = accountingData.Time,
+                    Price = accountingData.Price
+                };
+                _context.Add(newData);
+                _context.SaveChanges();
+                return Ok("成功建立資料");
+            }catch
+            {
+                return BadRequest("建立資料失敗");
             }
         }
 
@@ -135,31 +103,23 @@ namespace AccountingTool.Areas.API.Controllers
         [HttpPut]
         public ActionResult Put(Models.AccountingDataPut accountingData)
         {
-            string userId = readTokenUserId(Request);
-            var parameters = new DynamicParameters();
-            parameters.Add("Id", accountingData.Id);
-            parameters.Add("Description", accountingData.Description);
-            parameters.Add("Category", accountingData.Category);
-            parameters.Add("UserId", userId);
-            parameters.Add("Label", accountingData.Label);
-            parameters.Add("Time", accountingData.Time);
-            parameters.Add("Price", accountingData.Price);
-
-            string SqlString =
-                "UPDATE AccountingDatas " +
-                 "SET "+
-                 "[Description] = @Description ," +
-                 "[Category] = @Category ," +
-                 "[UserId] = @UserId ," +
-                 "[Label] = @Label ," +
-                 "[Time] = @Time ," +
-                 "[Price] = @Price "+
-                 "WHERE Id = @Id";
-
-            using (var conn = new SqlConnection(_connectionString))
+            try
             {
-                var result = conn.Execute(SqlString, parameters);
-                return Ok(result);
+                Models.AccountingData updateData = _context.AccountingDatas.Where(a => a.Id == accountingData.Id).FirstOrDefault();
+
+                updateData.Description = accountingData.Description;
+                updateData.Category = accountingData.Category;
+                updateData.UserId = Int32.Parse(readTokenUserId(Request));
+                updateData.Label = accountingData.Label;
+                updateData.Time = accountingData.Time;
+                updateData.Price = accountingData.Price;
+
+                _context.SaveChanges();
+                return Ok("成功修改資料");
+            }
+            catch
+            {
+                return BadRequest("修改資料失敗");
             }
         }
 
@@ -169,14 +129,11 @@ namespace AccountingTool.Areas.API.Controllers
         {
             try
             {
-                string userId = readTokenUserId(Request);
-                var parameters = new DynamicParameters();
-                parameters.Add("Id", id);
-                using (var conn = new SqlConnection(_connectionString))
-                {
-                    var result = conn.Execute("DELETE FROM AccountingDatas WHERE Id = @Id", parameters);
-                    return Ok("成功刪除資料");
-                }
+                Models.AccountingData deleteData = _context.AccountingDatas.Where(a => a.Id == id).FirstOrDefault();
+                _context.AccountingDatas.Remove(deleteData);
+                _context.SaveChanges();
+
+                return Ok("成功刪除資料");
             }
             catch
             {
@@ -189,7 +146,7 @@ namespace AccountingTool.Areas.API.Controllers
         {
             try
             {
-                IEnumerable<Label> LabelList = getLabelList();
+                IEnumerable<Label> LabelList = _context.Labels;
                 return Ok(LabelList);
             }
             catch

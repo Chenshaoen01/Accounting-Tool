@@ -23,6 +23,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddDbContext<AccountingContext>(
+        options => options.UseSqlServer(builder.Configuration["ConnectionStrings:Default"]));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

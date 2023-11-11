@@ -26,7 +26,6 @@
                             anchor: 'center',
                             align: 'center',
                             formatter: function (value, context) {
-                                console.log(value/context.chart.data.totalPrice)
                                 return context.chart.data.labels[context.dataIndex] + ":" + value + "元(" + Math.round(value/context.chart.data.totalPrice*100) + '%' + ")";
                             },
                             font: {

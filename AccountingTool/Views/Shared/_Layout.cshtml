@@ -15,12 +15,20 @@
 </head>
 <body class="bg-layout">
     @* 資料載入畫面 *@
-    <div id="loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-layout text-center"
+    <div id="query-loading-page" class="vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-layout text-center"
          style="z-index:10000">
         <h2>資料載入中
             <div class="progress mt-3" style="width: 250px">
                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
                 style="width: 100%"></div>
+            </div>
+        </h2>
+    </div>
+    @* 資料載入畫面-送出資料等待結果 *@
+    <div id="loading-page" class="d-none vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-dark bg-opacity-75 text-center"
+         style="z-index:10000">
+        <h2>
+            <div class="spinner-border text-white" role="status">
             </div>
         </h2>
     </div>

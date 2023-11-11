@@ -12,6 +12,14 @@
     <link rel="stylesheet" href="~/AccountingTool.styles.css" asp-append-version="true" />
 </head>
 <body class="bg-layout">
+    @* 資料載入畫面-送出資料等待結果 *@
+    <div id="loading-page" class="d-none vw-100 vh-100 position-fixed d-flex justify-content-center align-items-center bg-dark bg-opacity-75 text-center"
+         style="z-index:10000">
+        <h2>
+            <div class="spinner-border text-white" role="status">
+            </div>
+        </h2>
+    </div>
     @* 提示modal *@
     <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:10001">
         <div class="modal-dialog">

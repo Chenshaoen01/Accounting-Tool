@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AccountingTool.Models;
 
-public partial class User
+public class User
 {
+    [Key]
     public int Id { get; set; }
 
     public string Email { get; set; } = null!;

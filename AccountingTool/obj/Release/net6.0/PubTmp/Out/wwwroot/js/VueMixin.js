@@ -5,6 +5,14 @@
         }
     }
     , methods: {
+        QueryPageLoadingStart() {
+            const loadingPage = document.getElementById("query-loading-page");
+            loadingPage.classList.remove("d-none");
+        },
+        QueryPageLoadingEnd() {
+            const loadingPage = document.getElementById("query-loading-page");
+            loadingPage.classList.add("d-none");
+        },
         loadingStart() {
             const loadingPage = document.getElementById("loading-page");
             loadingPage.classList.remove("d-none");
@@ -95,7 +103,7 @@
             }
             modalBody.innerHTML = modalMessage;
             
-            var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+            const myModal = new bootstrap.Modal(document.getElementById('myModal'), {
                 keyboard: false
             })
             myModal.show();

@@ -6,13 +6,11 @@ namespace AccountingTool.Models;
 
 public partial class AccountingContext : DbContext
 {
-    public AccountingContext()
-    {
-    }
-
-    public AccountingContext(DbContextOptions<AccountingContext> options)
+    public readonly string _connectionString;
+    public AccountingContext(DbContextOptions<AccountingContext> options, IConfiguration configuration)
         : base(options)
     {
+        _connectionString = configuration.GetValue<string>("ConnectionStrings:Default");
     }
 
     public virtual DbSet<AccountingData> AccountingDatas { get; set; }
@@ -23,13 +21,13 @@ public partial class AccountingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=127.0.0.1;Database=Accounting;User ID=sa;Password=Tp6gl4p19980515;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer(_connectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountingData>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Category)
                 .HasMaxLength(10)
@@ -50,7 +48,7 @@ public partial class AccountingContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Id).ValueGeneratedOnAdd();

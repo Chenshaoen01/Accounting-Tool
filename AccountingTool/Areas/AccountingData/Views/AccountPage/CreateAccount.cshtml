@@ -59,9 +59,12 @@
                     const ValidateResult = this.validate(this.form);
                     if (ValidateResult.length > 0) {
                         this.modalShow("項目填寫不完全或格式錯誤", ValidateResult, "error");
-                    } else { 
+                    } else {
                         // 檢查密碼是否相符
                         if (this.form.password.value === this.passwordConfirm) {
+                            // 開啟資料載入畫面
+                            this.loadingStart();
+
                             const url = window.location.origin + "/api/Users/CreateAccount"
                             const data = this.getAxiosData(this.form);
                             axios.post(url, data)
@@ -74,6 +77,9 @@
                                 })
                                 .catch((err) => {
                                     this.modalShow(err.response.data, null, "error");
+                                })
+                                .finally(() => {
+                                    this.loadingEnd();
                                 })
                         } else {
                             this.modalShow("密碼 與 確認密碼 不相符", null, "error");

@@ -3,6 +3,23 @@
 }
 
 <div id="app" class="text-center">
+    @* 提示modal *@
+    <div class="modal fade" id="delete-confirm-modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:10001">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header py-2 bg-layout-dark">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <h3 id="modal-body" class="w-100 text-center py-5 mb-0 bg-layout rounded rounded-bottom">
+                    請確認是否刪除資料
+                </h3>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-dark" v-on:click="deleteData">確認</button>
+                    <button type="button" class="btn border" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container max-width-500">
         @* 切換支出/收入/盈餘 *@
         <div class="btn-group btn-group-lg mb-3" role="group" aria-label="Basic example">
@@ -88,7 +105,7 @@
                                     </div>
                                     <div>
                                         <button type="button" class="btn btn-dark me-2" v-on:click="editPage(dataItem.id)">編輯</button>
-                                        <button type="button" class="btn btn-dark" v-on:click="deleteData(dataItem.id)">刪除</button>
+                                        <button type="button" class="btn btn-dark" v-on:click="showDeleteConfirmModal(dataItem.id)">刪除</button>
                                     </div>
                                 </div>
                                 <span class="border-top border-dark p-2">備註：{{dataItem.description}}</span>
@@ -118,7 +135,9 @@
                     category: null,
                     dataList: [],
                     labelPriceCalculateDataList: [],
-                    timeClassifiedDataList: []
+                    timeClassifiedDataList: [],
+                    deleteModal: null,
+                    deleteTargetDataId: null
                 }
             }
             ,created() {
@@ -141,7 +160,7 @@
             }
             , mounted() {
                 // 顯示資料載入畫面
-                this.loadingStart();
+                this.QueryPageLoadingStart();
                 // 預設模式為"支出"，並搜尋資料
                 this.changeCategory(this.category)
             }
@@ -164,7 +183,7 @@
                 },
                 getDataList() {
                     // 顯示資料載入畫面
-                    this.loadingStart();
+                    this.QueryPageLoadingStart();
                     const params = new URLSearchParams()
                     params.append("category", this.category)
                     params.append("startDate", this.searchDate.startDate)
@@ -206,7 +225,7 @@
                     })
                     .finally(() => {
                         // 關閉資料載入畫面
-                        this.loadingEnd();
+                        this.QueryPageLoadingEnd();
                     })
                 },
                 timeClassify(dataList) {
@@ -305,8 +324,17 @@
                     this.storeSearchDataCookie();
                     window.location = window.location.origin + "/AccountingData/CreateAndUpdate/Edit?Id=" + dataId;
                 },
-                deleteData(dataId) {
-                    const url = "api/AccountingTool/deleteData/" + dataId
+                showDeleteConfirmModal(targetId) {
+                    this.deleteTargetDataId = targetId;
+                    this.deleteModal = new bootstrap.Modal(document.getElementById('delete-confirm-modal'), {
+                        keyboard: false
+                    })
+                    this.deleteModal.show();
+                },
+                deleteData() {
+                    this.deleteModal.hide();
+                    this.loadingStart();
+                    const url = "api/AccountingTool/deleteData/" + this.deleteTargetDataId
                     axios({
                         method: "DELETE",
                         url: url,
@@ -315,8 +343,15 @@
                         }
                     })
                     .then((res) => {
-                        alert(res.data)
+                        this.modalShow("成功刪除資料", null, "success");
                         this.getDataList();
+                    })
+                    .catch((err) => {
+                        this.modalShow("無法刪除資料", null, "error");
+                        this.getDataList();
+                    })
+                    .finally((res) => {
+                            this.loadingEnd();
                     })
                 }
             }

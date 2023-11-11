@@ -4,22 +4,18 @@
 
 <div id="app" class="text-center">
     <div class="container max-width-500">
-        <h2>您已登出 或 登入已逾期</h2>
-        <span id="countDownNumber"></span>秒後即將切換至登入頁面
-        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <h3 class="fw-bold mt-5">您已登出 或 登入已逾期</h3>
+        <h5 class="fw-bold mt-3">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+            即將切換至登入頁面
+        </h5>
     </div>
 </div>
 @section scripts{
     <script>
         // 倒數計時，轉至登入頁面
-        const countDownNumber = document.getElementById("countDownNumber")
-        countDownNumber.innerHTML = 3
-        setInterval(() => {
-            const currentNumber = parseInt(countDownNumber.innerHTML);
-            countDownNumber.innerHTML = currentNumber - 1
-            if (currentNumber === 1) {
-                window.location = window.location.origin + "/AccountingData/AccountPage/Login"
-            }
-        }, 1000)
+        setTimeout(() => {
+            window.location = window.location.origin + "/AccountingData/AccountPage/Login"
+        }, 3000)
     </script>
 }

@@ -121,12 +121,12 @@
                     this.getDataById();
                 }
                 // 關閉資料載入畫面
-                this.loadingEnd();
+                this.QueryPageLoadingEnd();
             }
             , methods: {
                 getDataById() {
                     // 顯示資料載入畫面
-                    this.loadingStart();
+                    this.QueryPageLoadingStart();
 
                     const url = window.location.origin+"/api/AccountingTool/getData/" + this.form.Id.value;
                     axios({
@@ -147,7 +147,7 @@
                     })
                     .finally(() => {
                         // 關閉資料載入畫面
-                        this.loadingEnd();
+                        this.QueryPageLoadingEnd();
                     })
                 },
                 getCategoryList() {
@@ -167,7 +167,8 @@
                     const ValidateResult = this.validate(this.form);
                     if (ValidateResult.length > 0) {
                         this.modalShow("項目填寫不完全或格式錯誤", ValidateResult, "error");
-                    } else { 
+                    } else {
+                        this.loadingStart();
                         axios({
                             url: window.location.origin + "/api/AccountingTool",
                             method: this.mode === "Edit" ? "PUT" : "POST",
@@ -177,16 +178,24 @@
                             }
                         }).then((res) => {
                             if (this.mode === "Create") {
-                                this.modalShow("成功建立資料", null, "success");
+                                this.modalShow("成功建立資料", "即將回到首頁", "success");
                             } else {
-                                this.modalShow("成功更新資料", null, "success");
+                                this.modalShow("成功更新資料", "即將回到首頁", "success");
                             }
+
+                            // 進入首頁
+                            setTimeout(() => {
+                                window.location = window.location.origin;
+                            }, "2000")
+
                         }).catch((err) => {
                             if (this.mode === "Create") {
                                 this.modalShow("建立資料失敗", null, "error");
                             } else {
                                 this.modalShow("更新資料失敗", null, "error");
                             }
+                        }).finally(() => {
+                            this.loadingEnd();
                         })
                     }
                 }

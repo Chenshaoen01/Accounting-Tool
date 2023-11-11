@@ -77,6 +77,9 @@
                         const url = window.location.origin + "/api/Users/logIn";
                         const data = this.getAxiosData(this.form);
 
+                        // 開啟資料載入畫面
+                        this.loadingStart();
+
                         axios.post(url, data)
                             .then((res) => {
                                 // 於cookie寫入登入token
@@ -94,7 +97,7 @@
 
                                 this.modalShow("登入成功", "即將進入至首頁", "succcess");
 
-                                // 跳轉至首頁
+                                // 進入首頁
                                 setTimeout(() => {
                                     window.location = window.location.origin;
                                 }, "2000")
@@ -102,6 +105,9 @@
                             })
                             .catch((err) => {
                                 this.modalShow("帳號或密碼錯誤", "error");
+                            })
+                            .finally(() => {
+                                this.loadingEnd();
                             })
                     }
                 }

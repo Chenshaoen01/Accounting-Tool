@@ -30,11 +30,14 @@ namespace AccountingTool.Areas.API.Controllers
         public readonly IConfiguration _configuration;
         public readonly string _connectionString;
         public readonly string _saltString;
-        public UsersController (IConfiguration configuration)
+        private readonly AccountingContext _context;
+
+        public UsersController (IConfiguration configuration, AccountingContext context)
         {
             _configuration = configuration;
             _connectionString = configuration.GetValue<string>("ConnectionStrings:Default");
             _saltString = configuration.GetValue<string>("SaltString");
+            _context = context;
         }
 
         //密碼雜湊、加鹽
@@ -54,16 +57,9 @@ namespace AccountingTool.Areas.API.Controllers
         //確認是否為新的信箱
         public bool checkIfIsNewEmail(string Email)
         {
-            string SqlString = "SELECT * FROM Users WHERE Email = @Email";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("Email", Email);
-
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                var user = conn.Query(SqlString, parameters);
-                return user.Count() == 0;
-            }
+            var matchUser = _context.Users
+                .Where(a => a.Email == Email);
+            return matchUser.Count() == 0;
         }
 
         //建立帳號
@@ -72,20 +68,33 @@ namespace AccountingTool.Areas.API.Controllers
         {
             if (checkIfIsNewEmail(userData.Email))
             {
+                
                 try
                 {
                     string hashedPassword = getHashedPassword(userData);
 
-                    string SqlString = "INSERT INTO Users([Email], [Password]) VALUES (@Email, @Password)";
-                    var parameters = new DynamicParameters();
-                    parameters.Add("Email", userData.Email);
-                    parameters.Add("Password", hashedPassword);
-
-                    using (var conn = new SqlConnection(_connectionString))
+                    User newUser = new User()
                     {
-                        var result = conn.Execute(SqlString, parameters);
-                    }
+                        Email = userData.Email,
+                        Password = hashedPassword,
+                    };
+
+                    _context.Add(newUser);
+                    _context.SaveChanges();
                     return Ok("帳號建立成功");
+                    //string hashedPassword = getHashedPassword(userData);
+
+                    //string SqlString = "INSERT INTO Users([Email], [Password]) VALUES (@Email, @Password)";
+                    //var parameters = new DynamicParameters();
+                    //parameters.Add("Email", userData.Email);
+                    //parameters.Add("Password", hashedPassword);
+
+                    //using (var conn = new SqlConnection(_connectionString))
+                    //{
+                    //    var result = conn.Execute(SqlString, parameters);
+                    //}
+
+                    //return Ok("帳號建立成功");
                 }
                 catch
                 {
@@ -104,20 +113,13 @@ namespace AccountingTool.Areas.API.Controllers
         public ActionResult Get(User userData)
         {
             //查詢符合的帳號密碼
-            string SqlString = "SELECT * FROM Users WHERE Email = @Email AND Password = @Password";
-
             string hashedPassword = getHashedPassword(userData);
-            var parameters = new DynamicParameters();
-            parameters.Add("Email", userData.Email);
-            parameters.Add("Password", hashedPassword);
 
-            IEnumerable<dynamic> user;
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                user = conn.Query(SqlString, parameters);
-            }
+            var matchUser = _context.Users
+                .Where(a => a.Email == userData.Email)
+                .Where(a => a.Password == hashedPassword);
 
-            if(user == null)
+            if(matchUser == null)
             {
                 return NotFound("帳號或密碼錯誤");
             }
@@ -125,8 +127,8 @@ namespace AccountingTool.Areas.API.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Email, user.First().Email),
-                    new Claim("UserId", user.First().Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, matchUser.First().Email),
+                    new Claim("UserId", matchUser.First().Id.ToString()),
                 };
 
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:KEY"]));
