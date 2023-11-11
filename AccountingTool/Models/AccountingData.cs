@@ -11,7 +11,7 @@ public partial class AccountingData
 
     public int UserId { get; set; }
 
-    public string Description { get; set; } = null!;
+    public string Description { get; set; } = "";
 
     public string Category { get; set; } = null!;
 

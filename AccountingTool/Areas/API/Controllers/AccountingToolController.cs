@@ -7,6 +7,7 @@ using Azure.Core;
 using NuGet.Versioning;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -64,6 +65,8 @@ namespace AccountingTool.Areas.API.Controllers
             {
                 DataListResult = DataListResult.Where(a => a.Category == category);
             }
+            DataListResult = DataListResult.OrderByDescending(a => a.Time);
+
             return Ok(DataListResult);
         }
 
@@ -83,17 +86,22 @@ namespace AccountingTool.Areas.API.Controllers
             {
                 Models.AccountingData newData = new Models.AccountingData()
                 {
-                    Description = accountingData.Description,
                     Category = accountingData.Category,
                     UserId = Int32.Parse(readTokenUserId(Request)),
                     Label = accountingData.Label,
                     Time = accountingData.Time,
                     Price = accountingData.Price
                 };
+                if (!accountingData.Description.IsNullOrEmpty())
+                {
+                    newData.Description = accountingData.Description;
+                }
+
                 _context.Add(newData);
                 _context.SaveChanges();
                 return Ok("成功建立資料");
-            }catch
+            }
+            catch
             {
                 return BadRequest("建立資料失敗");
             }
@@ -107,7 +115,15 @@ namespace AccountingTool.Areas.API.Controllers
             {
                 Models.AccountingData updateData = _context.AccountingDatas.Where(a => a.Id == accountingData.Id).FirstOrDefault();
 
-                updateData.Description = accountingData.Description;
+                if (!accountingData.Description.IsNullOrEmpty())
+                {
+                    updateData.Description = accountingData.Description;
+                }
+                else
+                {
+                    updateData.Description = "";
+                }
+                
                 updateData.Category = accountingData.Category;
                 updateData.UserId = Int32.Parse(readTokenUserId(Request));
                 updateData.Label = accountingData.Label;
